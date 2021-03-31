@@ -1,19 +1,20 @@
 <?php
 $dashboard = "";
-$pedidos = "";
-$productos = "";
+$suscripciones = "";
+$clases = "";
 $alta = "";
 $reportes = "";
 $usuarios = "";
+$instructores = "";
 switch ($pag) {
   case 'dashboard':
     $dashboard = "active";
     break;
-  case 'pedidos':
-    $pedidos = "active";
+  case 'suscripciones':
+    $suscripciones = "active";
     break;
-  case 'productos':
-    $productos = "active";
+  case 'clases':
+    $clases = "active";
     break;
   case 'alta':
     $alta = "active";
@@ -23,6 +24,9 @@ switch ($pag) {
     break;
   case 'usuarios':
     $usuarios = 'active';
+    break;
+  case 'instructores':
+    $instructores = 'active';
     break;
 }
 ?>
@@ -41,22 +45,28 @@ switch ($pag) {
           <p>Dashboard</p>
         </a>
       </li>
-      <li class="nav-item <?php echo  $pedidos; ?>">
-        <a class="nav-link" href="./pedidos.php">
+      <li class="nav-item <?php echo  $suscripciones; ?>">
+        <a class="nav-link" href="./suscripciones.php">
           <i class="material-icons">local_shipping</i>
-          <p>Pedidos</p>
+          <p>Suscripciones</p>
         </a>
       </li>
-      <li class="nav-item <?php echo  $productos; ?>">
-        <a class="nav-link" href="./productos.php">
+      <li class="nav-item <?php echo  $clases; ?>">
+        <a class="nav-link" href="./clases.php">
           <i class="material-icons">all_inbox</i>
-          <p>Lista de productos</p>
+          <p>Lista de clases</p>
+        </a>
+      </li>
+      <li class="nav-item <?php echo  $instructores; ?>">
+        <a class="nav-link" href="./instructores.php">
+          <i class="material-icons">face</i>
+          <p>Instructores</p>
         </a>
       </li>
       <li class="nav-item <?php echo  $alta; ?>">
-        <a class="nav-link" href="./alta-producto.php">
+        <a class="nav-link" href="./alta-clase.php">
           <i class="material-icons">add</i>
-          <p>Alta de productos</p>
+          <p>Dar de alta una clase</p>
         </a>
       </li>
       <li class="nav-item <?php echo  $reportes; ?>">

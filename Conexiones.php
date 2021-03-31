@@ -210,6 +210,54 @@ class Conexiones
 	    	return $e->getMessage();
 	    }
 	}
+
+	function AltaInstructor($params)
+	{
+		try
+		{
+			// calling stored procedure command
+			//parametro que sale agregar @ enves de :
+	        $sql = 'CALL AltaInstructor
+	        (
+	        	:usuario,
+	        	:clave,
+	        	:nombre,
+	        	:apellido,
+	        	:descripcion,
+	        	:telefono,
+				:correo,
+	        	@id_ins
+			)';
+
+	        // prepare for execution of the stored procedure
+	        $stmt = $this->dbh->prepare($sql);
+
+	        // pass value to the command
+	        $stmt->bindParam(':usuario', $params[0], PDO::PARAM_STR);
+	        $stmt->bindParam(':clave', $params[1], PDO::PARAM_STR);
+	        $stmt->bindParam(':nombre', $params[2], PDO::PARAM_STR);
+	        $stmt->bindParam(':apellido', $params[3], PDO::PARAM_STR);
+	        $stmt->bindParam(':descripcion', $params[4], PDO::PARAM_STR);
+			$stmt->bindParam(':telefono', $params[5], PDO::PARAM_STR);
+			$stmt->bindParam(':correo', $params[6], PDO::PARAM_STR);
+
+	        // execute the stored procedure
+	        $stmt->execute();
+
+	        $stmt->closeCursor();
+
+	        // execute the second query to get customer's level
+	        $row = $this->dbh->query("SELECT @id_ins AS id_ins")->fetch(PDO::FETCH_ASSOC);
+
+	        $json = json_encode($row);
+	        return $row["id_ins"];
+	    }
+	    catch (PDOException $e)
+	    {
+	    	die("Error occurred:" . $e->getMessage());
+	    	return $e->getMessage();
+	    }
+	}
     
 }
 ?>

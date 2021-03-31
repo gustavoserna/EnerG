@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="./assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    Vitallica - Usuarios
+    Vitallica - Dar de alta una clase
   </title>
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -17,6 +17,7 @@
   <!-- CSS Files -->
   <link href="./assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
   <link href="./assets/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 </head>
 
 <?php
@@ -39,43 +40,74 @@
 
 <body class="">
   <div class="wrapper ">
-    <?php $pag = "usuarios"; include("sidebar.php"); ?>
+    <?php $pag = "alta"; include("sidebar.php"); ?>
     <div class="main-panel">
       <!-- Navbar -->
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="javascript:;">Usuarios</a>
+            <a class="navbar-brand" href="javascript:;">Alta de clases</a>
           </div>
         </div>
       </nav>
       <!-- End Navbar -->
       <div class="content">
         <div class="container-fluid">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="card-header card-header-primary">
-                <h4 class="card-title">Usuarios</h4>
-                <p class="card-category">Lista de usuarios registrados</p>
-              </div>
-              <div class="card-body">
-                <div class="tab-content">
-                  <div class="tab-pane active" id="usuarios">
-                    <table class="table" id="table-usuarios" width="100%">
-                      <!-- TABLA USUARIOS -->
-                      <thead class="text-primary">
-                        <th>Usuario</th>
-                        <th>Nombre</th>
-                        <th>Telefono</th>
-                        <th>Fecha Registro</th>
-                      </thead>
-                      <tbody id="table-confirmados-body">
-                      </tbody>
-                    </table>
-                  </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">Dar de alta una clase</h4>
+                  <p class="card-category">Completa la información solicitada</p>
+                </div>
+                <div class="card-body">
+                  <form id="alta-clase" action="../Backend/App.php" method="post">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Clase</label>
+                          <input type="text" class="form-control" id="clase" name="clase">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Descripción breve</label>
+                          <textarea id="desc-breve" name="desc-breve" class="form-control"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Descripción completa</label>
+                          <textarea id="descripcion" name="descripcion" class="form-control"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Mínimo</label>
+                          <input type="text" class="form-control" id="minimo" name="minimo">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Máximo</label>
+                          <input type="text" class="form-control" id="maximo" name="maximo">
+                        </div>
+                      </div>
+                    </div><br>
+                    <button type="submit" class="btn btn-primary pull-right">Guardar</button>
+                    <div class="clearfix"></div>
+                  </form>
                 </div>
               </div>
-             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -130,38 +162,41 @@
   <script src="./assets/js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="./assets/js/material-dashboard.js?v=2.1.2" type="text/javascript"></script>
-  <script type="text/javascript">
-    function loadTabla(tabla, op)
-    {
-      $.ajax({
-        "url": "../Backend/App.php", 
-        "type": "POST",
-        "data": {
-          op: op
-        },     
-        success : function(data) {
-
-          $(tabla).DataTable({
-            data: data["usuarios"],
-            columns: [
-              { data: "id_usuario"},
-              { data: "nombre"},
-              { data: "telefono"},
-              { data: "fecha_registro"}
-            ]
-          });
-        } 
-      });
-    }
-  </script>
   <script>
     $(document).ready(function() 
     { 
-      //LOAD TABLAS
-      loadTabla("#table-usuarios", "GetUsuarios");
-
+      //alta de clase
+      $("#alta-clase").on("submit", function(e)
+      {
+        e.preventDefault();
+        var f = $(this);
+        var formData = new FormData(document.getElementById("alta-clase"));
+        formData.append("op", "AltaClase");
+        $.ajax({
+          url: "../Backend/App.php",
+          type: "post",
+          dataType: "html",
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false
+        })
+        .done(function(res){
+          alert("Clase dada de alta.");
+          $("#clase").val('');
+          $("#desc-breve").val('');
+          $("#descripcion").val('');
+          $("#minimo").val('');
+          $("#maximo").val('');
+        });
+      });
     });
   </script>
 </body>
 
 </html>
+
+
+
+
+

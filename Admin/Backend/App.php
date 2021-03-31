@@ -13,10 +13,41 @@ if($op == "IniciarSesion")
 	echo trim($Admin->IniciarSesion($usuario, $contraseña));
 }
 
-if($op == "GetPedido")
+//si
+if($op == "GetSuscripcion")
 {
 	$Admin = new Admin();
-	echo trim($Admin->GetPedido($_POST["id_pedido"]));
+	echo trim($Admin->GetSuscripcion($_POST["id_suscripcion"]));
+}
+
+//si
+if($op == "GetInstructores")
+{
+	$Admin = new Admin();
+	echo trim($Admin->GetInstructores());
+}
+
+//si
+if($op == "GetInstructor")
+{
+	$Admin = new Admin();
+	echo trim($Admin->GetInstructor($_POST["id_instructor"]));
+}
+
+//si
+if($op == "AltaInstructor")
+{
+	$nombre = $_POST["nombre"];
+	$apellido = $_POST["apellido"];
+	$usuario = $_POST["usuario"];
+	$clave = $_POST["clave"];
+	$telefono = $_POST["telefono"];
+	$correo = $_POST["correo"];
+	$descripcion = $_POST["descripcion"];
+	$foto = $_FILES["file"];
+
+	$Admin = new Admin();
+	echo trim($Admin->AltaInstructor($nombre, $apellido, $usuario, $clave, $telefono, $correo, $descripcion, $foto));
 }
 
 if($op == "SetEstadoPedido")
@@ -35,10 +66,16 @@ if($op == "GetPedidosActivos")
 	echo trim($Admin->GetPedidosActivosRepartidores());
 }
 
-if($op == "GetPedidosEnCurso")
+if($op == "GetSuscripcionesActivas")
 {
 	$Admin = new Admin();
-	echo trim($Admin->GetPedidosDashboard("1"));
+	echo trim($Admin->GetSuscripciones("1"));
+}
+
+if($op == "GetSuscripcionesFinalizadas")
+{
+	$Admin = new Admin();
+	echo trim($Admin->GetSuscripciones("0"));
 }
 
 if($op == "GetPedidosListosRecoleccion")
@@ -152,18 +189,16 @@ if($op == "GetHeaders")
 	echo trim($Admin->GetHeaders());
 }
 
-if($op == "AltaProducto")
+if($op == "AltaClase")
 {
-	$producto = $_POST["producto"];
-	$categoria = $_POST["categoria"];
-	$subcategoria = $_POST["subcategoria"];
-	$precio = $_POST["precio"];
-	$unidad = $_POST["unidad"];
-	$imagen = $_FILES["file"];
-	//error_log($producto.",".$categoria.",".$subcategoria.",".$precio.",".$unidad.",".$imagen);
+	$clase = $_POST["clase"];
+	$descripcion_breve = $_POST["desc-breve"];
+	$descripcion = $_POST["descripcion"];
+	$minimo = $_POST["minimo"];
+	$maximo = $_POST["maximo"];
 
 	$Admin = new Admin();
-	echo trim($Admin->AltaProducto($producto, $categoria, $subcategoria, $precio, $unidad, $imagen));
+	echo trim($Admin->AltaClase($clase, $descripcion_breve, $descripcion, $minimo, $maximo));
 }
 
 if($op == "GetUsuarios")

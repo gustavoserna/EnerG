@@ -1,5 +1,5 @@
 <?php
-//session_start();
+session_start();
 include("../../Conexiones.php");
 
 class Admin
@@ -161,6 +161,34 @@ class Admin
 	//------------------------------------------------ GRAFICAS ----------------------------------------------------------------------
 
 	//------------------------------------------------ REPORTES ----------------------------------------------------------------------
+	function GetSuscripciones($status)
+	{
+		$query = 
+		"
+		SELECT
+		p.plan, 
+		CONCAT(u.nombre, ' ' ,u.apellido) as cliente,
+		pu.id_plan_usuario as id_suscripcion,
+		pu.clases_disponibles,
+		pu.fecha_alta
+		FROM plan_usuario as pu
+		LEFT JOIN plan as p ON p.id_plan = pu.id_plan
+		LEFT JOIN usuario as u ON u.id_usuario = pu.id_usuario
+		WHERE pu.status = :status
+		";
+		$params = array(array("status", $status));
+		$c = $this->Conexiones->Select($query, $params);
+
+		for($i = 0; $i < sizeof($c); $i++)
+		{
+			$id_suscripcion = $c[$i]["id_suscripcion"];
+			$c[$i]["otros"] = 
+			'<button type="button" rel="tooltip" title="Información de la suscripción" class="btn btn-success btn-link btn-sm" onclick="showVentanaSuscripcion(\''.$id_suscripcion.'\')"><i class="material-icons">launch</i></button>';
+		}
+
+		return json_encode(array("suscripciones" => $c));
+	}
+
 	function GetReportesFiltrados($del, $al)
 	{
 		$del = date("Y-m-d", strtotime($del));
@@ -303,67 +331,47 @@ class Admin
 		return json_encode(array("pedidos" => $consulta));
 	}
 
-	function GetPedido($id_pedido)
+	function GetSuscripcion($id_suscripcion)
 	{
-		$query = "
-		SELECT 
-		v.id_venta,
+		$query = 
+		"
+		SELECT
+		p.plan, 
+		CONCAT(u.nombre, ' ' ,u.apellido) as cliente,
+		u.telefono,
+		pu.id_plan_usuario as id_suscripcion,
+		pu.clases_disponibles,
+		pu.fecha_alta,
 		v.subtotal,
-		v.fecha_venta,
-		d_ent.direccion as direccion_entrega,
-		(
-			SELECT le.estado FROM estado_pedido as e 
-			LEFT JOIN lista_estados as le ON le.id_estado = e.id_estado
-			WHERE e.id_venta = v.id_venta ORDER by e.id_estado_pedido DESC LIMIT 1	
-		) as pedido_estado,
-		(
-			SELECT veh.vehiculo FROM vehiculo as veh
-			LEFT JOIN vehiculo_repartidor as vr ON vr.id_vehiculo = veh.id_vehiculo
-			WHERE vr.id_vehiculo_repartidor = v.id_vehiculo_repartidor
-		) as vehiculo,
-		CONCAT(r.nombre, ' ', r.apellidos) as nombre_repartidor,
-		(
-			SELECT u.nombre FROM usuario as u WHERE u.id_usuario = v.id_usuario
-		) as cliente,
-		(
-			SELECT u.telefono FROM usuario as u WHERE u.id_usuario = v.id_usuario
-		) as telefono,
-		(
-			SELECT 
-			CONCAT('- ', GROUP_CONCAT(DISTINCT e.establecimiento SEPARATOR '\r\n- ')) 
-			FROM venta_detalle as vd 
-			LEFT JOIN establecimiento as e ON e.id_establecimiento = vd.id_establecimiento
-			WHERE vd.id_venta = v.id_venta 
-			GROUP by vd.id_venta
-		) as proveedores
-		FROM venta as v
-		LEFT JOIN direccion_usuario as d_ent ON d_ent.id_direccion = v.id_direccion_entrega
-		LEFT JOIN repartidor as r on r.id_repartidor = v.id_repartidor
-		WHERE v.id_venta = :id_pedido
+		v.total
+		FROM plan_usuario as pu
+		LEFT JOIN venta as v ON v.id_plan_usuario = pu.id_plan_usuario
+		LEFT JOIN plan as p ON p.id_plan = pu.id_plan
+		LEFT JOIN usuario as u ON u.id_usuario = pu.id_usuario
+		WHERE pu.id_plan_usuario = :id_suscripcion
 		";
-		$parametros = array(array("id_pedido", $id_pedido));
+		$parametros = array(array("id_suscripcion", $id_suscripcion));
 		$consulta = $this->Conexiones->Select($query, $parametros);
 
-		//agregar articulos
+		//agregar clases tomadas
 		$query = "
 		SELECT 
-		a.articulo,
-		TRUNCATE((vd.precio_articulo), 2) as precio,
-		vd.cantidad,
-		u.unidad,
-		(SELECT imagen FROM imagen_articulo WHERE id_articulo = vd.id_articulo ORDER by id_imagen DESC LIMIT 1) as imagen_principal
-		FROM venta_detalle as vd
-		LEFT JOIN articulo as a ON a.id_articulo = vd.id_articulo
-		LEFT JOIN unidad_articulo as ua ON ua.id_unidad_articulo = vd.id_unidad_articulo
-		LEFT JOIN unidad as u ON u.id_unidad = ua.id_unidad_
-		WHERE vd.id_venta = :id_pedido
+		c.clase,
+		CONCAT(hc.fecha, ' ', hc.horario_inicio, ' - ', hc.horario_fin) as horario_clase,
+		CONCAT(i.nombre, ' ', i.apellido) as instructor
+		FROM usuario_clase as uc 
+		LEFT JOIN clase as c ON c.id_clase = uc.id_clase
+		LEFT JOIN horario_clase as hc ON hc.id_clase = uc.id_clase
+		LEFT JOIN instructor_clase as ic ON ic.id_clase = uc.id_clase
+		LEFT JOIN instructor as i ON i.id_instructor = ic.id_instructor
+		WHERE uc.id_plan_usuario = :id_suscripcion
 		";
-		$parametros = array(array("id_pedido", $id_pedido));
-		$articulos = $this->Conexiones->Select($query, $parametros);
+		$parametros = array(array("id_suscripcion", $id_suscripcion));
+		$clases = $this->Conexiones->Select($query, $parametros);
 
-		$consulta[0]["articulos"] = $articulos;
+		$consulta[0]["clases"] = $clases;
 
-		return '{ "pedido": '.json_encode($consulta[0])."}";
+		return json_encode(array("suscripcion" => $consulta[0]));
 	}
 
 	function SetEstadoPedido($id_pedido, $id_estado)
@@ -590,64 +598,11 @@ class Admin
         //--------------------------------- imagen chica -------------------------------------
 	}
 
-	function AltaProducto($producto, $categoria, $subcategoria, $precio, $unidad, $imagen)
+	function AltaClase($clase, $descripcion_breve, $descripcion, $minimo, $maximo)
 	{
-		$parametros = array($producto, $categoria, $subcategoria, $precio, $unidad, $this->id_establecimiento);
-		$c = $this->Conexiones->AltaProductoProc($parametros);
-		$id_art = $c;
-
-		//error_log(json_encode($id_art));
-
-		$upload_path = '../../app/Imagenes/';
-        //--------------------------------- imagen grande -------------------------------------
-        $img_name = $id_art."_img.png";
-        //file path to upload in the server 
-        $file_path = $upload_path . $img_name;  
-        $file = $imagen["tmp_name"];
-        $size = getimagesize($file);
-        $width0 = $size[0];
-        $height0 = $size[1];
-        $ratio = $width0/$height0;
-        
-        if($width0 > 300){
-            $width = 300;
-            $height = 300/$ratio;
-        }else{
-            $width = 300;
-            $height = 300/$ratio;
-        }
-        $src = imagecreatefromstring(file_get_contents($file));
-        $dst = imagecreatetruecolor($width, $height);
-        imagecopyresampled($dst,$src,0,0,0,0,$width,$height,$size[0],$size[1]);
-        imagedestroy($src);
-        $file_path = imagepng($dst,$file_path); // adjust format as needed
-        //move_uploaded_file($imagen["tmp_name"], $file_path);
-        //--------------------------------- imagen grande -------------------------------------
-
-        //--------------------------------- imagen chica -------------------------------------
-        $img_name = $id_art."_mini_img.png";
-        //file path to upload in the server 
-        $file_path = $upload_path . $img_name;  
-        $file = $imagen["tmp_name"];
-        $size = getimagesize($file);
-        $width0 = $size[0];
-        $height0 = $size[1];
-        $ratio = $width0/$height0;
-        
-        if($width0 > 150){
-            $width = 150;
-            $height = 150/$ratio;
-        }else{
-            $width = 150;
-            $height = 150/$ratio;
-        }
-        $src = imagecreatefromstring(file_get_contents($file));
-        $dst = imagecreatetruecolor($width, $height);
-        imagecopyresampled($dst,$src,0,0,0,0,$width,$height,$size[0],$size[1]);
-        imagedestroy($src);
-        $file_path = imagepng($dst,$file_path); // adjust format as needed
-        //move_uploaded_file($imagen["tmp_name"], $file_path);
-        //--------------------------------- imagen chica -------------------------------------
+		$query = "INSERT INTO clase(clase, descripcion, breve_descripcion, minimo, maximo) VALUES(?,?,?,?,?)";
+		$params = array($clase, $descripcion, $descripcion_breve, $minimo, $maximo);
+		return $this->Conexiones->Insert($query, $params);
 	}
 	//------------------------------------------------ PRODUCTO --------------------------
 
@@ -680,6 +635,99 @@ class Admin
 		$c = $this->Conexiones->Select($query, $parametros);
 
 		return json_encode(array("usuarios" => $c));
+	}
+
+	function GetInstructores()
+	{
+		$query = "SELECT id_instructor, foto, CONCAT(nombre, ' ', apellido) as nombre, telefono FROM instructor ORDER by id_instructor DESC";
+		$params = array();
+		$c = $this->Conexiones->Select($query, $params);
+
+		for($i = 0; $i < sizeof($c); $i++)
+		{
+			$id_instructor = $c[$i]["id_instructor"];
+			$foto = $c[$i]["foto"];
+			$c[$i]["foto"] = "<img src='../../Plataforma/img/instructores/$foto' width='70px' style='border-radius:10px;' />";
+			$c[$i]["otros"] = 
+			'<button type="button" rel="tooltip" title="Información del instructor" class="btn btn-success btn-link btn-sm" onclick="showVentanaInstructor(\''.$id_instructor.'\')"><i class="material-icons">launch</i></button>';
+		}
+
+		return json_encode(array("instructores" => $c));
+	}
+
+	function GetInstructor($id_instructor)
+	{
+		$query = 
+		"
+		SELECT
+		i.usuario,
+		i.clave,
+		CONCAT(i.nombre, ' ', i.apellido) as instructor,
+		i.telefono,
+		i.correo,
+		i.foto
+		FROM instructor as i
+		WHERE i.id_instructor = :id_instructor
+		";
+		$parametros = array(array("id_instructor", $id_instructor));
+		$consulta = $this->Conexiones->Select($query, $parametros);
+
+		//agregar clases
+		$query = "
+		SELECT 
+		c.clase,
+		CONCAT(hc.fecha, ' ', hc.horario_inicio, ' - ', hc.horario_fin) as horario_clase,
+		CONCAT(u.nombre, ' ', u.apellido) as alumno,
+		CONCAT(i.nombre, ' ', i.apellido) as instructor
+		FROM instructor_clase as ic
+		LEFT JOIN clase as c ON c.id_clase = ic.id_clase
+		LEFT JOIN horario_clase as hc ON hc.id_clase = ic.id_clase
+		LEFT JOIN instructor as i ON i.id_instructor = ic.id_instructor
+		LEFT JOIN usuario_clase as uc ON uc.id_instructor_clase = ic.id_instructor_clase
+		LEFT JOIN usuario as u ON u.id_usuario = uc.id_usuario
+		WHERE ic.id_instructor = :id_instructor
+		";
+		$parametros = array(array("id_instructor", $id_instructor));
+		$clases = $this->Conexiones->Select($query, $parametros);
+
+		$consulta[0]["clases"] = $clases;
+
+		return json_encode(array("instructor" => $consulta[0]));
+	}
+
+	function AltaInstructor($nombre, $apellido, $usuario, $clave, $telefono, $correo, $descripcion, $imagen)
+	{
+		$parametros = array($usuario, $clave, $nombre, $apellido, $descripcion, $telefono, $correo);
+		$c = $this->Conexiones->AltaInstructor($parametros);
+		$id_ins = $c;
+
+		$upload_path = '../../Plataforma/img/instructores/';
+        //--------------------------------- imagen -------------------------------------
+        $img_name = $id_ins."_img.png";
+        //file path to upload in the server 
+        $file_path = $upload_path . $img_name;  
+        $file = $imagen["tmp_name"];
+        $size = getimagesize($file);
+        $width0 = $size[0];
+        $height0 = $size[1];
+        $ratio = $width0/$height0;
+        
+        if($width0 > 720){
+            $width = 720;
+            $height = 720/$ratio;
+        }else{
+            $width = 720;
+            $height = 720/$ratio;
+        }
+        $src = imagecreatefromstring(file_get_contents($file));
+		$dst = imagecreatetruecolor($width, $height);
+		$fondo = imagecolorallocate($dst, 255, 255, 255);
+		imagefill($dst, 0, 0, $fondo);
+        imagecopyresampled($dst,$src,0,0,0,0,$width,$height,$size[0],$size[1]);
+        imagedestroy($src);
+        $file_path = imagepng($dst,$file_path); // adjust format as needed
+        //move_uploaded_file($imagen["tmp_name"], $file_path);
+        //--------------------------------- imagen -------------------------------------
 	}
 	//------------------------------------------------ USUARIOS --------------------------
 }
