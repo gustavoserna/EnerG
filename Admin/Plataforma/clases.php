@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="./assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    Vitallica - Lista de clases
+    Vitallica - Clases
   </title>
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -45,7 +45,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="javascript:;">Lista de clasess</a>
+            <a class="navbar-brand" href="javascript:;">Clases</a>
           </div>
         </div>
       </nav>
@@ -57,14 +57,86 @@
               <div class="card-header card-header-tabs card-header-primary">
                 <div class="nav-tabs-navigation">
                   <div class="nav-tabs-wrapper">
-                    <span class="nav-tabs-title">Categorías :</span>
-                    <ul id="categorias" class="nav nav-tabs" data-tabs="tabs">
+                    <span class="nav-tabs-title">Clases :</span>
+                    <ul class="nav nav-tabs" data-tabs="tabs">
+                      <li class="nav-item">
+                        <a class="nav-link active" href="#activas" data-toggle="tab">
+                          <i class="material-icons">format_align_justify</i> Lista
+                          <div class="ripple-container"></div>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#finalizadas" data-toggle="tab">
+                          <i class="material-icons">add</i> Alta
+                          <div class="ripple-container"></div>
+                        </a>
+                      </li>
                     </ul>
                   </div>
                 </div>
               </div>
               <div class="card-body">
-                <div id="tabs" class="tab-content">
+                <div class="tab-content">
+                  <div class="tab-pane active" id="activas">
+                    <table class="table" id="table-clases" width="100%">
+                      <!-- TABLA LISTA CLASES -->
+                      <thead class="text-primary">
+                        <th>Id clase</th>
+                        <th>Clase</th>
+                        <th>Breve descripción</th>
+                        <th>Acción</th>
+                      </thead>
+                      <tbody id="table-clases-body">
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="tab-pane" id="alta">
+                    <!-- ALTA CLASE -->
+                    <form id="alta-clase" action="../Backend/App.php" method="post">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="bmd-label-floating">Clase</label>
+                            <input type="text" class="form-control" id="clase" name="clase">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="bmd-label-floating">Descripción breve</label>
+                            <textarea id="desc-breve" name="desc-breve" class="form-control"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="bmd-label-floating">Descripción completa</label>
+                            <textarea id="descripcion" name="descripcion" class="form-control"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="bmd-label-floating">Mínimo</label>
+                            <input type="text" class="form-control" id="minimo" name="minimo">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label class="bmd-label-floating">Máximo</label>
+                            <input type="text" class="form-control" id="maximo" name="maximo">
+                          </div>
+                        </div>
+                      </div><br>
+                      <button type="submit" class="btn btn-primary pull-right">Guardar</button>
+                      <div class="clearfix"></div>
+                    </form>
+                  </div>
                 </div>
               </div>
              </div>
@@ -83,55 +155,42 @@
       </footer>
     </div>
   </div>
-  <div id="ventana-producto" class="fixed-top" style="visibility: hidden;">
+  <div id="ventana-clase" class="fixed-top" style="visibility: hidden;">
     <div class="row justify-content-center">
       <div class="col-md-5">
         <div class="card card-chart">
-          <div class="card-header card-header-primary">
-            <h4 class="card-title" id="producto-header"></h4>
+          <div class="card-header card-header-info">
             <i id="close-ventana" class="material-icons" style="cursor:pointer;">close</i>
-            <p class="card-category">Checa la información del artículo</p>
+            <h4 class="card-title" id="clase-header"></h4>
+            <p class="card-category">Checa toda la información de la clase</p>
           </div>
           <div class="card-body">
-            <h4 class="card-title">Información del artículo</h4><hr>
+            <h4 class="card-title">Información de la clase</h4><hr>
             <p class="card-category">
-              <table style="border-spacing:30px; border-collapse: separate;">
-                <tr>
-                  <td style="vertical-align:top; padding: 10px 0;">
-                    <p id="imagen-articulo"></p>
-                    <form id="update-imagen" action="../Proveedor/App.php" method="post" enctype="multipart/form-data">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="form-group">
-                            <label class="bmd-label-floating">Imágen</label>
-                            <div class="form-group form-file-upload form-file-simple">
-                              <input type="text" class="form-control inputFileVisible" placeholder="Simple chooser...">
-                              <input type="file" name="file" class="inputFileHidden">
-                            </div>
-                          </div>
-                        </div>
-                      </div><br>
-                      <button type="submit" class="btn btn-primary pull-right">Actualizar imagen</button>
-                    </form>
-                  </td>
-                  <td style="padding: 10px 0;"> 
-                    <h6>Id Artículo</h6><p id="id-articulo"></p>
-                    <span>Artículo</span><input id="articulo" class="form-control" />
-                    <span>Descripción</span><input id="descripcion" class="form-control" />
-                    <span>Categoría</span><select id="categorias-articulo" class="form-control"></select>
-                    <span>Subcategoría</span><select id="subcategorias-articulo" class="form-control"></select>
-                    <span>Unidad</span><select id="unidades-articulo" class="form-control"></select>
-                    <span>Tu Precio</span><input id=precio-articulo class="form-control" />
-                  </td>
-                </tr>
-              </table>
-              <button onclick="updateProducto()" type="submit" class="btn btn-primary pull-right">Actualizar</button>
-            </p><br>
-            <div class="card-footer pull-right">
-              <div class="stats text-primary">
-                El precio promedio se obtiene del promedio de precio de venta de todas las bodegas participantes mas un 20%.
+              <div class="row">
+                <div class="col-md-5">
+                  <h6>Clase</h6><p id="clase-v"></p>
+                  <h6>Descripción</h6><p id="descripcion-v"></p>
+                  <h6>Breve descripción</h6><p id="breve-descripcion-v"></p>
+                  <h6>Mínimo</h6><p id="minimo-v"></p>
+                  <h6>Máximo</h6><p id="maximo-v"></p>
+                </div>
+                <div class="col-md-7">
+                  <div class="table-responsive">
+                    <table id="tabla-clases-info" class="table table-hover" width="100%">
+                      <thead>
+                        <tr>
+                          <th><b>Clase</b></th>
+                          <th><b>Alumno</b></th>
+                          <th><b>Horario clase</b></th>
+                        </tr>
+                      </thead>
+                      <tbody id="table-clases-body"></tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
+            </p>
           </div>
         </div>
       </div>
@@ -177,282 +236,102 @@
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="./assets/js/material-dashboard.js?v=2.1.2" type="text/javascript"></script>
   <script type="text/javascript">
-    var id_row_tabla = null;
-    function loadTabla(tabla, op, idcat)
+    function showVentanaInstructor(id_instructor)
     {
-      var dt = null;
+      var post_url = "../Backend/App.php";
+      var form_data = "op=GetInstructor&id_instructor=" + id_instructor;
+      $.post(post_url, form_data, function(json)
+      {
+        $("#ventana-instrcutor").show();
+        $("#ventana-instructor").css("visibility", "visible");
+        $("#instructor").html(json["instructor"]["instructor"]);
+        $("#usuario").html(json["instructor"]["usuario"]);
+        $("#clave").html(json["instructor"]["clave"]);
+        $("#telefono").html(json["instructor"]["telefono"]);
+        $("#correo").html(json["instructor"]["correo"]);
+
+        var clases = json["instructor"]["clases"];
+        var table_body = "";
+        for(var i = 0; i < clases.length; i++)
+        {
+          table_body += "<tr><td>" + clases[i]["clase"] + "</td>" + "<td>" + clases[i]["alumno"] + "</td>" + "<td>" + clases[i]["horario_clase"] + "</td>" +"</tr>";
+        }
+        $("#table-clases-body").html(table_body);
+      });
+    }
+
+    function loadTabla(tabla, op)
+    {
       $.ajax({
-        "url": "../Proveedor/App.php", 
+        "url": "../Backend/App.php", 
         "type": "POST",
         "data": {
-          op: op,
-          idcat: idcat
+          op: op
         },     
         success : function(data) {
-
-           dt = $(tabla).DataTable({
+          $(tabla).DataTable({
             columns: "adjust",
-            'columnDefs': [
+              'columnDefs': [
               {
                 "targets": 0, 
-                "className": "text-center",
-                "width": "5%"
+                "width": "10%"
               },
               {
                 "targets": 1, 
-                "className": "text-center",
-                "width": "15%"
+                "width": "20%"
               },
               {
                 "targets": 2, 
-                "className": "text-left",
-                "width": "50%"
+                "width": "60%"
               },
               {
                 "targets": 3, 
-                "className": "text-center",
-                "width": "10%"
-              },
-              {
-                "targets": 4, 
-                "className": "text-center",
-                "width": "10%"
-              },
-              {
-                "targets": 5, 
-                "className": "text-center",
                 "width": "10%"
               }
-            ],
-            data: data["productos"],
+            ],  
+            data: data["clases"],
             columns: [
-              { data: "id_articulo"},
-              { data: "imagen_principal"},
-              { data: "articulo"},
-              { data: "precio"},
-              { data: "precio_promedio"},
-              { data: "checked"}
+              { data: "id_clase"},
+              { data: "clase" },
+              { data: "breve_descripcion"},
+              { data: "otros"}
             ]
           });
         } 
       });
-  
-      $(tabla + ' tbody').on( 'click', 'tr', function () {
-        id_row_tabla = dt.row( this ).index();
-      });
     }
+  </script>
+  <script>
+    $(document).ready(function() 
+    { 
+      //LOAD TABLAS
+      loadTabla("#table-clases", "GetListaClases");
 
-    function checkProducto(id_articulo)
-    {
-      $.ajax({
-        "url": "../Proveedor/App.php", 
-        "type": "POST",
-        "data": {
-          op: "CheckProducto",
-          id_articulo: id_articulo
-        },     
-        success : function(data) {
-          alert(data);
-        } 
-      });
-    }
-
-    function loadCategorias()
-    {
-      var post_url = "../Proveedor/App.php";
-      var form_data = "op=GetCategorias";
-      $.post(post_url, form_data, function(json)
+      //cerrar ventana clase
+      $("#close-ventana").click(function(event)
       {
-        var categorias = "";
-        var activo = "";
-        var arts = json["categorias"];
-        for(var i = 0; i < arts.length; i++)
-        {
-          if(i == 0) activo = "active"; else activo = "";
-          categorias += '<li class="nav-item" onclick="setCategoriaTabla(\'C'+arts[i]["id_categoria"]+'\')" style="margin:5px;"><a class="nav-link '+ activo +'" href="#C'+ arts[i]["id_categoria"] +'" data-toggle="tab">'+ arts[i]["categoria"] +'<div class="ripple-container"></div></a></li>';
-          crearTabla(arts[i]["id_categoria"], "C" + arts[i]["id_categoria"]);
-        }
-        $("#categorias").html(categorias);
+        $("#ventana-instructor").hide();
+        $("#ventana-instructor").css("visibility", "hidden"); 
+      }); 
+
+      $('#tabla-instructor-info').DataTable({
+        "scrollY":"300px",
+        "scrollCollapse":true,
+        "paging":false,
+        "searching":false,
+        "ordering":false,
+        "info":false
       });
-    }
 
-    var id_cat = "C1";
-    function setCategoriaTabla(id_cat_)
-    {
-      id_cat = id_cat_;
-    }
-
-    var activo_tab = "active";
-    function crearTabla(idcat, cat)
-    {
-      var tabs = "";
-      tabs = '<div class="tab-pane '+ activo_tab +'" id="'+ cat +'"><table class="table" id="table-'+ cat +'" width="100%"><thead class="text-primary"><th>Id</th><th>Imágen</th><th>Artículo</th><th>Tu Precio</th><th>Precio Promedio</th><th>Activar/Editar</th></thead><tbody></tbody></table></div>';
-      $("#tabs").append(tabs);
-      activo_tab = "";
-      loadTabla("#table-" + cat, "GetProductos", idcat);
-    }
-
-    var id_categoria_articulo;
-    var id_subcategoria_articulo;
-    var id_unidad_articulo;
-    var id_unidad;
-    function loadUnidadesArticulo(id_unidad)
-    {
-      $.ajax(
+      //alta clase
+      $("#alta-instructor").on("submit", function(e)
       {
-        "url": "../Proveedor/App.php", 
-        "type": "POST",
-        "data": {
-          op: "GetUnidades"
-        }, 
-        success : function(data) 
-        {
-          var arr = data["unidades"];
-          var select = document.getElementById("unidades-articulo");
-
-          for(var i = 0; i < arr.length; i++)
-          {
-            var option = document.createElement("option");
-            option.text = arr[i]["unidad"];
-            option.id = arr[i]["id_unidad"];
-            if(arr[i]["id_unidad"] == id_unidad) option.selected = true;
-            select.add(option); 
-          }
-        } 
-      });
-    }
-
-    function loadCategoriasArticulo(id_categoria)
-    {
-      $.ajax(
-      {
-        "url": "../Proveedor/App.php", 
-        "type": "POST",
-        "data": {
-          op: "GetCategorias"
-        }, 
-        success : function(data) 
-        {
-          var arr = data["categorias"];
-          var select = document.getElementById("categorias-articulo");
-
-          for(var i = 0; i < arr.length; i++)
-          {
-            var option = document.createElement("option");
-            option.text = arr[i]["categoria"];
-            option.id = arr[i]["id_categoria"];
-            if(arr[i]["id_categoria"] == id_categoria) option.selected = true;
-            select.add(option); 
-          }
-        } 
-      });
-    }
-
-    function loadSubCategoriasArticulo(id_categoria, id_subcategoria = "")
-    {
-      $.ajax(
-      {
-        "url": "../Proveedor/App.php", 
-        "type": "POST",
-        "data": {
-          op: "GetSubCategorias",
-          id_categoria: id_categoria
-        }, 
-        success : function(data) 
-        {
-          var arr = data["subcategorias"];
-          var select = document.getElementById("subcategorias-articulo");
-          id_subcategoria_ = arr[0]["id_subcategoria"];
-
-          for(var i = 0; i < arr.length; i++)
-          {
-            var option = document.createElement("option");
-            option.text = arr[i]["subcategoria"];
-            option.id = arr[i]["id_subcategoria"];
-            if(arr[i]["id_subcategoria"] == id_subcategoria) option.selected = true;
-            select.add(option); 
-          }
-        } 
-      });
-    }
-
-    function showVentanaProducto(id_articulo)
-    {
-      var post_url = "../Proveedor/App.php";
-      var form_data = "op=GetArticulo&id_articulo=" + id_articulo;
-      $.post(post_url, form_data, function(json)
-      {
-        $("#ventana-producto").show();
-        $("#ventana-producto").css("visibility", "visible");
-        $("#id-articulo").html(json["id_articulo"]);
-        $("#articulo").val(json["articulo"]);
-        $("#descripcion").html(json["descripcion"]);
-        $("#precio-articulo").val(json["tu_precio"]);
-        $("#imagen-articulo").html("<img width='100px' src='https://app.vapa-ya.com/Imagenes/"+ json["imagen_principal"] +"' />");
-
-        id_categoria_articulo = json["id_categoria"];
-        id_subcategoria_articulo = json["id_subcategoria"];
-        id_unidad = json["id_unidad_"];
-        id_unidad_articulo = json["id_unidad_articulo"];
-
-        $("#categorias-articulo").empty();
-        $("#subcategorias-articulo").empty();
-        $("#unidades-articulo").empty();
-        loadCategoriasArticulo(id_categoria_articulo);
-        loadSubCategoriasArticulo(id_categoria_articulo, id_subcategoria_articulo);
-        loadUnidadesArticulo(id_unidad);
-      });
-    }
-
-    function updateProducto()
-    {
-      var id_articulo = $("#id-articulo").html();
-      var precio = $("#precio-articulo").val();
-      var descripcion = $("#descripcion").val();
-      var articulo = $("#articulo").val();
-
-      $.ajax({
-        "url": "../Proveedor/App.php", 
-        "type": "POST",
-        "data": {
-          op: "UpdateArticulo",
-          id_articulo: id_articulo,
-          precio: precio,
-          descripcion : descripcion,
-          articulo : articulo,
-          categoria : id_categoria_articulo,
-          subcategoria : id_subcategoria_articulo,
-          unidad : id_unidad,
-          id_unidad_articulo : id_unidad_articulo
-        },     
-        success : function(data) 
-        {         
-
-        } 
-      });
-
-      $("#ventana-producto").hide();
-      $("#ventana-producto").css("visibility", "hidden"); 
-      //update precio
-      var table = $("#table-" + id_cat).DataTable();
-      var temp = table.row(id_row_tabla).data();
-      temp["precio"] = precio;
-      temp["articulo"] = articulo;
-      table.row(id_row_tabla).data(temp).invalidate();
-
-      alert("Producto actualizado. Actualiza la página si quieres ver los cambios completos."); 
-    }
-
-    $("#update-imagen").on("submit", function(e)
-      {
-        var id_articulo = $("#id-articulo").html();
         e.preventDefault();
         var f = $(this);
-        var formData = new FormData(document.getElementById("update-imagen"));
-        formData.append("op", "UpdateImagenProducto");
-        formData.append("id_articulo", id_articulo);
+        var formData = new FormData(document.getElementById("alta-instructor"));
+        formData.append("op", "AltaInstructor");
         $.ajax({
-          url: "../Proveedor/App.php",
+          url: "../Backend/App.php",
           type: "post",
           dataType: "html",
           data: formData,
@@ -461,81 +340,18 @@
           processData: false
         })
         .done(function(res){
-          alert("Imágen actualizada.");
+        alert(res);
+          alert("Instructor dado de alta.");
+          $("#nombre-i").val('');
+          $("#apellido-i").val('');
+          $("#usuario-i").val('');
+          $("#clave-i").val('');
+          $("#telefono-i").val('');
+          $("#correo-i").val('');
+          $("#descripcion-i").val('');
           $("#file").val('');
         });
       });
-  </script>
-  <script>
-    $(document).ready(function() 
-    { 
-      //LOAD TABLAS
-      loadCategorias();
-
-      //CERRAR VENTANA
-      $("#close-ventana").click(function(event)
-      {
-        $("#ventana-producto").hide();
-        $("#ventana-producto").css("visibility", "hidden"); 
-      }); 
-
-      //unidad index changed
-      document.getElementById('unidades-articulo').addEventListener('change', function(e) 
-      {
-        var id_unidad_ = e.target.options[e.target.selectedIndex].getAttribute('id');
-        id_unidad = id_unidad_;
-      });
-
-      //categoria index changed
-      document.getElementById('categorias-articulo').addEventListener('change', function(e) 
-      {
-        var id_categoria = e.target.options[e.target.selectedIndex].getAttribute('id');
-        $("#subcategorias-articulo").empty();
-        loadSubCategoriasArticulo(id_categoria);
-        id_categoria_articulo = id_categoria;
-      });
-
-      //subcategoria index changed
-      document.getElementById('subcategorias-articulo').addEventListener('change', function(e) 
-      {
-        var id_subcategoria = e.target.options[e.target.selectedIndex].getAttribute('id');
-        id_subcategoria_articulo = id_subcategoria;
-      });
-
-      // FileInput
-      $('.form-file-simple .inputFileVisible').click(function() {
-        $(this).siblings('.inputFileHidden').trigger('click');
-      });
-
-      $('.form-file-simple .inputFileHidden').change(function() {
-        var filename = $(this).val().replace(/C:\\fakepath\\/i, '');
-        $(this).siblings('.inputFileVisible').val(filename);
-      });
-
-      $('.form-file-multiple .inputFileVisible, .form-file-multiple .input-group-btn').click(function() {
-        $(this).parent().parent().find('.inputFileHidden').trigger('click');
-        $(this).parent().parent().addClass('is-focused');
-      });
-
-      $('.form-file-multiple .inputFileHidden').change(function() {
-        var names = '';
-        for (var i = 0; i < $(this).get(0).files.length; ++i) {
-          if (i < $(this).get(0).files.length - 1) {
-            names += $(this).get(0).files.item(i).name + ',';
-          } else {
-            names += $(this).get(0).files.item(i).name;
-          }
-        }
-        $(this).siblings('.input-group').find('.inputFileVisible').val(names);
-      });
-
-      $('.form-file-multiple .btn').on('focus', function() {
-        $(this).parent().siblings().trigger('focus');
-      });
-
-      $('.form-file-multiple .btn').on('focusout', function() {
-        $(this).parent().siblings().trigger('focusout');
-      });     
     });
   </script>
 </body>

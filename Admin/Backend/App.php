@@ -28,6 +28,13 @@ if($op == "GetInstructores")
 }
 
 //si
+if($op == "GetListaClases")
+{
+	$Admin = new Admin();
+	echo trim($Admin->GetListaClases());
+}
+
+//si
 if($op == "GetInstructor")
 {
 	$Admin = new Admin();

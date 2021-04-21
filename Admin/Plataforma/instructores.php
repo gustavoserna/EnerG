@@ -61,13 +61,13 @@
                     <ul class="nav nav-tabs" data-tabs="tabs">
                       <li class="nav-item">
                         <a class="nav-link active" href="#activas" data-toggle="tab">
-                          <i class="material-icons">thumb_up</i> Lista
+                          <i class="material-icons">format_align_justify</i> Lista
                           <div class="ripple-container"></div>
                         </a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" href="#finalizadas" data-toggle="tab">
-                          <i class="material-icons">check_circle</i> Alta
+                          <i class="material-icons">add</i> Alta
                           <div class="ripple-container"></div>
                         </a>
                       </li>

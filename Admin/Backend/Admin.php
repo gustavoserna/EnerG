@@ -655,6 +655,22 @@ class Admin
 		return json_encode(array("instructores" => $c));
 	}
 
+	function GetListaClases()
+	{
+		$query = "SELECT id_clase, clase, breve_descripcion FROM clase ORDER by clase DESC";
+		$params = array();
+		$c = $this->Conexiones->Select($query, $params);
+
+		for($i = 0; $i < sizeof($c); $i++)
+		{
+			$id_clase = $c[$i]["id_clase"];
+			$c[$i]["otros"] = 
+			'<button type="button" rel="tooltip" title="Información de la clase" class="btn btn-success btn-link btn-sm" onclick="showVentanaClase(\''.$id_clase.'\')"><i class="material-icons">launch</i></button>';
+		}
+
+		return json_encode(array("clases" => $c));
+	}
+
 	function GetInstructor($id_instructor)
 	{
 		$query = 
