@@ -148,7 +148,10 @@ class Conexiones
 	        (
 				:id_usuario,
 				:id_instructor_clase,
-				:id_horario_clase
+				:id_horario_clase,
+				:clases_disponibles,
+				:id_clase,
+				:id_plan_usuario
 			)';
 
 	        // prepare for execution of the stored procedure
@@ -158,6 +161,9 @@ class Conexiones
 			$stmt->bindParam(':id_usuario', $params[0], PDO::PARAM_STR);
 			$stmt->bindParam(':id_instructor_clase', $params[1], PDO::PARAM_STR);
 			$stmt->bindParam(':id_horario_clase', $params[2], PDO::PARAM_STR);
+			$stmt->bindParam(':clases_disponibles', $params[3], PDO::PARAM_STR);
+			$stmt->bindParam(':id_clase', $params[4], PDO::PARAM_STR);
+			$stmt->bindParam(':id_plan_usuario', $params[5], PDO::PARAM_STR);
 
 	        // execute the stored procedure
 	        $stmt->execute();

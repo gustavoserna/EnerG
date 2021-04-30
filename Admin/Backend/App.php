@@ -57,6 +57,41 @@ if($op == "AltaInstructor")
 	echo trim($Admin->AltaInstructor($nombre, $apellido, $usuario, $clave, $telefono, $correo, $descripcion, $foto));
 }
 
+//si
+if($op == "ActualizarInstructor")
+{
+	$nombre = $_POST["nombre"];
+	$usuario = $_POST["usuario"];
+	$clave = $_POST["clave"];
+	$telefono = $_POST["telefono"];
+	$correo = $_POST["correo"];
+	$descripcion = $_POST["desc"];
+
+	$Admin = new Admin();
+	echo trim($Admin->ActualizarInstructor($nombre, $usuario, $clave, $telefono, $correo, $descripcion));
+}
+
+//si
+if($op == "GetHorariosClases")
+{
+	$Admin = new Admin();
+	echo trim($Admin->GetHorariosClases());
+}
+
+//si
+if($op == "GetHorariosClase")
+{
+	$Admin = new Admin();
+	echo trim($Admin->GetHorariosClase($_POST["id_clase"]));
+}
+
+//si
+if($op == "QuitarHorarioClase")
+{
+	$Admin = new Admin();
+	echo trim($Admin->QuitarHorarioClase($_POST["id_horario_clase"]));
+}
+
 if($op == "SetEstadoPedido")
 {
 	$Admin = new Admin();

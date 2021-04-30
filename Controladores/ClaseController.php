@@ -1,7 +1,7 @@
 <?php
 include("../Clases/Clase.php");
 
-$op = $_GET["op"];
+$op = $_POST["op"];
 $Clase = new Clase();
 
 if($op == "getClasesInstHor"){
@@ -9,11 +9,11 @@ if($op == "getClasesInstHor"){
 }
 
 if($op == "agendarClase"){
-    echo $Clase->agendarClase($_GET["clase"], $_GET["id_usuario"]);
+    echo $Clase->agendarClase($_POST["id_instructor_clase"], $_POST["id_horario_clase"], $_POST["id_clase"]);
 }
 
 if($op == "cancelarClase"){
-    echo $Clase->cancelarClase($_GET["id_usuario_clase"]);
+    echo $Clase->cancelarClase($_POST["id_usuario_clase"]);
 }
 
 if($op == "getGaleria"){

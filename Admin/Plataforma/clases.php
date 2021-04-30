@@ -17,6 +17,7 @@
   <!-- CSS Files -->
   <link href="./assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
   <link href="./assets/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <link href="./assets/css/material-kit.min.css" rel="stylesheet" />
 </head>
 
 <?php
@@ -66,8 +67,14 @@
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="#finalizadas" data-toggle="tab">
+                        <a class="nav-link" href="#alta" data-toggle="tab">
                           <i class="material-icons">add</i> Alta
+                          <div class="ripple-container"></div>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#horarios" data-toggle="tab">
+                          <i class="material-icons">add</i> Horarios
                           <div class="ripple-container"></div>
                         </a>
                       </li>
@@ -92,7 +99,7 @@
                   </div>
                   <div class="tab-pane" id="alta">
                     <!-- ALTA CLASE -->
-                    <form id="alta-clase" action="../Backend/App.php" method="post">
+                    <form id="alta-clase" method="post">
                       <div class="row">
                         <div class="col-md-12">
                           <div class="form-group">
@@ -136,6 +143,22 @@
                       <button type="submit" class="btn btn-primary pull-right">Guardar</button>
                       <div class="clearfix"></div>
                     </form>
+                  </div>
+                  <div class="tab-pane" id="horarios">
+                    <button onclick="showVentanaAgregarHorario()" class="btn btn-primary pull-left">+ Agregar un horario</button><br><br><br>
+                    <table class="table" id="table-horarios" width="100%">
+                      <!-- TABLA HORARIOS CLASES -->
+                      <thead class="text-primary">
+                        <th>Clase</th>
+                        <th>Instructor</th>
+                        <th>Día</th>
+                        <th>Horario</th>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                      </thead>
+                      <tbody id="table-horarios-clases-body">
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -196,6 +219,85 @@
       </div>
     </div>
   </div>
+
+  <div id="ventana-horario" class="fixed-top" style="visibility: hidden;">
+    <div class="row justify-content-center">
+      <div class="col-md-7">
+        <div class="card card-chart">
+          <div class="card-header card-header-info">
+            <i id="close-ventana-horario" class="material-icons" style="cursor:pointer;">close</i>
+            <h4 class="card-title" id="clase-horario-header"></h4>
+            <p class="card-category">Checa toda la información del horario de clase</p>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Información de la clase</h4><hr>
+            <p class="card-category">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="table-responsive">
+                    <table id="tabla-clase-horario" class="table table-hover" width="100%">
+                      <thead>
+                        <tr>
+                          <th><b>Clase</b></th>
+                          <th><b>Instructor</b></th>
+                          <th><b>Dia</b></th>
+                          <th><b>Horario</b></th>
+                          <th><b>Fecha</b></th>
+                          <th><b>Quitar</b></th>
+                        </tr>
+                      </thead>
+                      <tbody id="table-clase-horario-body"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ventana-agregar-horario" class="fixed-top" style="visibility: hidden;">
+    <div class="row justify-content-center">
+      <div class="col-md-7">
+        <div class="card card-chart">
+          <div class="card-header card-header-info">
+            <i id="close-ventana-agregar-horario" class="material-icons" style="cursor:pointer;">close</i>
+            <h4 class="card-title" id="agregar-horario-header"></h4>
+            <p class="card-category">Agrega un horario a una clase</p>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Agrega un horario</h4><hr>
+            <p class="card-category">
+              <div class="row">
+                <div class="col-md-12">
+                  <form>
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Clase</label>
+                      <select id="clases" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Instructor</label>
+                      <select id="instructores" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Fecha y hora</label>
+                      <input type="text" class="form-control datetimepicker" id="fecha-clase-i" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary pull-right">Guardar</button>
+                  </form>
+                </div>
+              </div>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!--   Core JS Files   -->
   <script src="./assets/js/core/jquery.min.js"></script>
   <script src="./assets/js/core/popper.min.js"></script>
@@ -236,40 +338,57 @@
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="./assets/js/material-dashboard.js?v=2.1.2" type="text/javascript"></script>
   <script type="text/javascript">
-    function showVentanaInstructor(id_instructor)
+    function showVentanaClase(id_clase)
+    {
+      $("#ventana-clase").show();
+        $("#ventana-clase").css("visibility", "visible");
+    }
+
+    function showVentanaHorario(id_clase)
     {
       var post_url = "../Backend/App.php";
-      var form_data = "op=GetInstructor&id_instructor=" + id_instructor;
+      var form_data = "op=GetHorariosClase&id_clase=" + id_clase;
       $.post(post_url, form_data, function(json)
       {
-        $("#ventana-instrcutor").show();
-        $("#ventana-instructor").css("visibility", "visible");
-        $("#instructor").html(json["instructor"]["instructor"]);
-        $("#usuario").html(json["instructor"]["usuario"]);
-        $("#clave").html(json["instructor"]["clave"]);
-        $("#telefono").html(json["instructor"]["telefono"]);
-        $("#correo").html(json["instructor"]["correo"]);
+        $("#ventana-horario").show();
+        $("#ventana-horario").css("visibility", "visible");
 
-        var clases = json["instructor"]["clases"];
+        var horarios = json["horarios"];
         var table_body = "";
-        for(var i = 0; i < clases.length; i++)
+        for(var i = 0; i < horarios.length; i++)
         {
-          table_body += "<tr><td>" + clases[i]["clase"] + "</td>" + "<td>" + clases[i]["alumno"] + "</td>" + "<td>" + clases[i]["horario_clase"] + "</td>" +"</tr>";
+          table_body += "<tr><td>" + horarios[i]["clase"] + "</td>" + "<td>" + horarios[i]["instructor"] + "</td>" + "<td>" + horarios[i]["dia"] + "</td>" + "<td>" + horarios[i]["horario"] + "</td>" + "<td>" + horarios[i]["fecha"] + "</td>" + "<td>" + horarios[i]["otros"] + "</td>" +"</tr>";
         }
-        $("#table-clases-body").html(table_body);
+        $("#table-clase-horario-body").html(table_body);
       });
     }
 
-    function loadTabla(tabla, op)
+    function showVentanaAgregarHorario()
+    {
+      $("#ventana-agregar-horario").show();
+      $("#ventana-agregar-horario").css("visibility", "visible");
+    }
+
+    function quitarHorario(id_horario_clase)
+    {
+      var post_url = "../Backend/App.php";
+      var form_data = "op=QuitarHorarioClase&id_horario_clase=" + id_horario_clase;
+      $.post(post_url, form_data, function(json)
+      {
+      });
+      alert("Horario eliminado");
+    }
+
+    function loadTablaListaClases()
     {
       $.ajax({
         "url": "../Backend/App.php", 
         "type": "POST",
         "data": {
-          op: op
+          op: "GetListaClases"
         },     
         success : function(data) {
-          $(tabla).DataTable({
+          $("#table-clases").DataTable({
             columns: "adjust",
               'columnDefs': [
               {
@@ -300,12 +419,64 @@
         } 
       });
     }
+
+    function loadTablaHorariosClases()
+    {
+      $.ajax({
+        "url": "../Backend/App.php", 
+        "type": "POST",
+        "data": {
+          op: "GetHorariosClases"
+        },     
+        success : function(data) {
+          $("#table-horarios").DataTable({
+            data: data["horarios"],
+            columns: [
+              { data: "clase"},
+              { data: "instructor" },
+              { data: "dia" },
+              { data: "horario" },
+              { data: "fecha" },
+              { data: "otros" }
+            ]
+          });
+        } 
+      });
+    }
+
+    $("#close-ventana-horario").click(function(event)
+      {
+        $("#ventana-horario").hide();
+        $("#ventana-horario").css("visibility", "hidden"); 
+    });
+    
+    $("#close-ventana-agregar-horario").click(function(event)
+      {
+        $("#ventana-agregar-horario").hide();
+        $("#ventana-agregar-horario").css("visibility", "hidden"); 
+    });
   </script>
   <script>
     $(document).ready(function() 
     { 
+      //load fechas
+      $('.datetimepicker').datetimepicker({
+        icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-chevron-up",
+          down: "fa fa-chevron-down",
+          previous: 'fa fa-chevron-left',
+          next: 'fa fa-chevron-right',
+          today: 'fa fa-screenshot',
+          clear: 'fa fa-trash',
+          close: 'fa fa-remove'
+        }
+      });
+
       //LOAD TABLAS
-      loadTabla("#table-clases", "GetListaClases");
+      loadTablaListaClases();
+      loadTablaHorariosClases();
 
       //cerrar ventana clase
       $("#close-ventana").click(function(event)
@@ -324,12 +495,12 @@
       });
 
       //alta clase
-      $("#alta-instructor").on("submit", function(e)
+      $("#alta-clase").on("submit", function(e)
       {
         e.preventDefault();
         var f = $(this);
-        var formData = new FormData(document.getElementById("alta-instructor"));
-        formData.append("op", "AltaInstructor");
+        var formData = new FormData(document.getElementById("alta-clase"));
+        formData.append("op", "AltaClase");
         $.ajax({
           url: "../Backend/App.php",
           type: "post",
@@ -340,17 +511,59 @@
           processData: false
         })
         .done(function(res){
-        alert(res);
-          alert("Instructor dado de alta.");
-          $("#nombre-i").val('');
-          $("#apellido-i").val('');
-          $("#usuario-i").val('');
-          $("#clave-i").val('');
-          $("#telefono-i").val('');
-          $("#correo-i").val('');
-          $("#descripcion-i").val('');
-          $("#file").val('');
+          alert("Clase dada de alta.");
+          $("#clase").val('');
+          $("#desc-breve").val('');
+          $("#descripcion").val('');
+          $("#minimo").val('');
+          $("#maximo").val('');
         });
+      });
+
+      //cargar clases
+      $.ajax(
+      {
+        "url": "../Backend/App.php", 
+        "type": "POST",
+        "data": {
+          op: "GetListaClases"
+        }, 
+        success : function(data) 
+        {
+          var arr = data["clases"];
+          var select = document.getElementById("clases");
+
+          for(var i = 0; i < arr.length; i++)
+          {
+            var option = document.createElement("option");
+            option.text = arr[i]["clase"];
+            option.id = arr[i]["id_clase"];
+            select.add(option); 
+          }
+        } 
+      });
+
+      //cargar instructores
+      $.ajax(
+      {
+        "url": "../Backend/App.php", 
+        "type": "POST",
+        "data": {
+          op: "GetInstructores"
+        }, 
+        success : function(data) 
+        {
+          var arr = data["instructores"];
+          var select = document.getElementById("instructores");
+
+          for(var i = 0; i < arr.length; i++)
+          {
+            var option = document.createElement("option");
+            option.text = arr[i]["nombre"];
+            option.id = arr[i]["id_instructor"];
+            select.add(option); 
+          }
+        } 
       });
     });
   </script>

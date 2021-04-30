@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Raleway:300,400,500,700,800" rel="stylesheet">
 
   <!-- Bootstrap CSS File -->
-  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
 
   <!-- Libraries CSS Files -->
   <link href="lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
@@ -63,8 +63,8 @@
   ============================-->
   <section id="intro">
     <div class="intro-container wow fadeIn">
-      <h1 class="mb-4 pb-0">Vitallica<br><span>Slogan</span> Gimnasio</h1>
-      <p class="mb-4 pb-0">El mejor gimnasio de Torreón</p>
+      <h1 class="mb-4 pb-0">Vitallica<br><span>Ve</span> Por Todo</h1>
+      <p class="mb-4 pb-0">Sigamos adelante</p>
       <a href="https://www.youtube.com/watch?v=jDDaplaOz7Q" class="venobox play-btn mb-4" data-vbtype="video"
         data-autoplay="true"></a>
       <a href="#about" class="about-btn scrollto">Ver un vídeo</a>
@@ -105,7 +105,7 @@
     <section id="instructors" class="wow fadeInUp">
       <div class="container">
         <div class="section-header">
-          <h2>Instructores</h2>
+          <br><br><h2>Instructores</h2>
           <p>Algunos de nuestros instructores</p>
         </div>
 
@@ -173,19 +173,18 @@
       <div class="container">
         <div class="section-header">
           <h2>Galería</h2>
-          <p>Checa nuestra galería con fotos de nuestras últimas clases</p>
         </div>
       </div>
 
       <div id="galeria" class="owl-carousel gallery-carousel">
-        <a href="img/gallery/1.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/1.jpg" alt=""></a>
-        <a href="img/gallery/2.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/2.jpg" alt=""></a>
-        <a href="img/gallery/3.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/3.jpg" alt=""></a>
-        <a href="img/gallery/4.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/4.jpg" alt=""></a>
-        <a href="img/gallery/5.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/5.jpg" alt=""></a>
-        <a href="img/gallery/6.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/6.jpg" alt=""></a>
-        <a href="img/gallery/7.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/7.jpg" alt=""></a>
-        <a href="img/gallery/8.jpg" class="venobox" data-gall="gallery-carousel"><img src="img/gallery/8.jpg" alt=""></a>
+        <a href="img/gallery/1.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/1.jpg" alt=""></a>
+        <a href="img/gallery/2.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/2.jpg" alt=""></a>
+        <a href="img/gallery/3.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/3.jpg" alt=""></a>
+        <a href="img/gallery/4.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/4.jpg" alt=""></a>
+        <a href="img/gallery/5.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/5.jpg" alt=""></a>
+        <a href="img/gallery/6.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/6.jpg" alt=""></a>
+        <a href="img/gallery/7.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/7.jpg" alt=""></a>
+        <a href="img/gallery/8.jpg" class="venobox" data-gall="gallery-carousel"><img style="height:180px;" src="img/gallery/8.jpg" alt=""></a>
       </div>
 
     </section>
@@ -198,7 +197,7 @@
 
         <div class="section-header">
           <h2>Compra tu plan de entramiento ahora</h2>
-          <p>Velit consequatur consequatur inventore iste fugit unde omnis eum aut.</p>
+          <p>Elige el paquete que mas se adapte a tus necesidades.</p>
         </div>
 
         <div id="planes" class="row"></div>
@@ -207,7 +206,7 @@
 
       <!-- Modal Order Form -->
       <div id="buy-ticket-modal" class="modal fade">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog"role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title">Compra tu plan</h4>
@@ -216,24 +215,46 @@
               </button>
             </div>
             <div class="modal-body">
-              <form id="payment-form" action="" method="post" role="form" class="contactForm">
-                <div class="form-group">
-                  <select id="plan-type" name="plan-type" class="form-control" >
-                    <option value="">-- Selecciona el plan a comprar --</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <input type="text" class="form-control" name="total" placeholder="Total" value="$180" disabled>
-                </div>
-                <div class="form-group">
-                  <select id="metodos-pago" name="metodos-pago" class="form-control" >
-                    <option value="">-- Selecciona un método de pago --</option>
-                  </select>
-                </div>
-                <div class="text-center">
-                  <button id="comprar-plan" type="submit" class="btn">Comprar</button>
-                </div>
-              </form>
+              <div class="form-group">
+                <select id="plan-type" name="plan-type" class="form-control" >
+                  <option value="">-- Selecciona el plan a comprar --</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <input type="text" class="form-control" name="total" placeholder="Total" value="$180" disabled>
+              </div>
+              
+              <div class="form-group">
+                <select id="metodos-pago" name="metodos-pago" class="form-control" >
+                  <option value="">-- Selecciona un método de pago --</option>
+                </select>
+              </div>
+              
+              <button type='button' class='btn' data-toggle='modal' data-target='#tarjeta-modal'>Agregar método de pago</button>
+              
+              <div class="text-right">
+                <button onclick="comprarPlan()" class="btn">Comprar</button>
+              </div>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <!-- Modal Tarjeta -->
+      <div id="tarjeta-modal" class="modal fade">
+        <div class="modal-dialog"role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Agrega un método de pago</h4>
+              <button type="button" onclick="loadMetodosPago()" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- Card form -->
+              <embed id="card-form" type="text/html" src="card.html" width="100%" height="500">
+              <!-- Card form -->
             </div>
           </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

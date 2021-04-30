@@ -15,7 +15,7 @@ $(document).ready(function()
             },     
             success : function(data) {
                 if(data == "1"){
-                    alert("loggeado");
+                    window.location.href = "perfil.php";
                 } else {
                     alert("Usuario o contraseña incorrectos");
                 }

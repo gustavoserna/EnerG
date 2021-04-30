@@ -3,10 +3,9 @@ $(document).ready(function()
     //get perfil
     $.ajax({
         "url": "../Controladores/UsuarioController.php", 
-        "type": "GET",
+        "type": "POST",
         "data": {
           op: "getPerfil",
-          id_usuario: "1"
         },     
         success : function(data) {
             var perfil = JSON.parse(data);
@@ -40,7 +39,7 @@ $(document).ready(function()
 
         $.ajax({
             "url": "../Controladores/UsuarioController.php", 
-            "type": "GET",
+            "type": "POST",
             "data": {
               op: "updatePerfil",
               nombre: nombre,
@@ -58,12 +57,26 @@ $(document).ready(function()
     loadClases();
 });
 
+function cerrarSesion() {
+    //clases programadas
+    $.ajax({
+        "url": "../Controladores/UsuarioController.php", 
+        "type": "POST",
+        "data": {
+          op: "cerrarSesion"
+        },     
+        success : function(data) {
+            window.location.href = "index.html";
+        } 
+    });
+}
+
 function loadClases(){
 
     //clases programadas
     $.ajax({
         "url": "../Controladores/UsuarioController.php", 
-        "type": "GET",
+        "type": "POST",
         "data": {
           op: "getClasesStatusUsuario",
           id_status: 1
@@ -102,7 +115,7 @@ function loadClases(){
     //clases completadas
     $.ajax({
         "url": "../Controladores/UsuarioController.php", 
-        "type": "GET",
+        "type": "POST",
         "data": {
           op: "getClasesStatusUsuario",
           id_status: 2
@@ -137,7 +150,7 @@ function loadClases(){
     //clases canceladas
     $.ajax({
         "url": "../Controladores/UsuarioController.php", 
-        "type": "GET",
+        "type": "POST",
         "data": {
           op: "getClasesStatusUsuario",
           id_status: 3

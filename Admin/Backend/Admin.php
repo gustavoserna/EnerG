@@ -69,7 +69,7 @@ class Admin
 		SELECT
 		c.db_date,
 		DAYOFWEEK(c.db_date) as dia,
-		CAST(IFNULL(SUM(v.total), 0) as double) as venta_total
+		IFNULL(SUM(v.total), 0) as venta_total
 		FROM calendario as c
 		LEFT JOIN venta as v ON (DATE(c.db_date) = DATE(v.fecha_alta))
 		WHERE DATE(c.db_date) BETWEEN DATE(CURDATE() - 6) 
@@ -104,7 +104,7 @@ class Admin
 		SELECT
 		c.db_date,
 		DAYOFWEEK(c.db_date) as dia,
-		CAST(IFNULL(COUNT(DISTINCT v.id_venta), 0) as int) as altas_totales
+		IFNULL(COUNT(DISTINCT v.id_venta), 0) as altas_totales
 		FROM calendario as c
 		LEFT JOIN venta as v ON (DATE(c.db_date) = DATE(v.fecha_alta))
 		WHERE DATE(c.db_date) BETWEEN DATE(CURDATE() - 6) AND DATE(CURDATE())
@@ -244,9 +244,68 @@ class Admin
 			$c[$i]["otros"] = 
 			'<button type="button" rel="tooltip" title="Información del pedido" class="btn btn-success btn-link btn-sm" onclick="showVentanaPedido(\''.$id_pedido.'\')"><i class="material-icons">launch</i></button>';
 		}
-		//$c["venta_total"] = number_format($venta_total, 2);
-		//error_log(json_encode($c));
 		return '{ "pedidos": '.json_encode($c)."}";
+	}
+
+	function GetHorariosClases()
+	{
+		$query = 
+		"
+		SELECT
+		c.id_clase, c.clase,
+		CONCAT(i.nombre, ' ', i.apellido) as instructor,
+		hc.dia, CONCAT(hc.horario_inicio, ' - ', hc.horario_fin) as horario, hc.fecha
+		FROM clase as c
+		LEFT JOIN horario_clase as hc ON hc.id_clase = c.id_clase
+		LEFT JOIN instructor as i ON i.id_instructor = hc.id_instructor
+		WHERE hc.status = 1 AND c.status = 1 AND i.status = 1 
+		ORDER BY hc.fecha DESC
+		";
+		$params = array();
+		$c = $this->Conexiones->Select($query, $params);
+
+		for($i = 0; $i < sizeof($c); $i++)
+		{
+			$id_clase = $c[$i]["id_clase"];
+			$c[$i]["otros"] = 
+			'<button type="button" rel="tooltip" title="Modificar horario" class="btn btn-success btn-link btn-sm" onclick="showVentanaHorario(\''.$id_clase.'\')"><i class="material-icons">launch</i></button>';
+		}
+
+		return json_encode(array("horarios" => $c));
+	}
+
+	function GetHorariosClase($id_clase)
+	{
+		$query = 
+		"
+		SELECT
+		c.id_clase, c.clase,
+		CONCAT(i.nombre, ' ', i.apellido) as instructor,
+		hc.id_horario_clase, hc.dia, CONCAT(hc.horario_inicio, ' - ', hc.horario_fin) as horario, hc.fecha
+		FROM clase as c
+		LEFT JOIN horario_clase as hc ON hc.id_clase = c.id_clase
+		LEFT JOIN instructor as i ON i.id_instructor = hc.id_instructor
+		WHERE c.id_clase = :id_clase AND hc.status = 1 AND c.status = 1 AND i.status = 1 
+		ORDER BY hc.fecha DESC
+		";
+		$params = array(array("id_clase", $id_clase));
+		$c = $this->Conexiones->Select($query, $params);
+
+		for($i = 0; $i < sizeof($c); $i++)
+		{
+			$id_horario_clase = $c[$i]["id_horario_clase"];
+			$c[$i]["otros"] = 
+			'<button type="button" rel="tooltip" title="Quitar" class="btn btn-success btn-link btn-sm" onclick="quitarHorario(\''.$id_horario_clase.'\')"><i class="material-icons">delete</i></button>';
+		}
+
+		return json_encode(array("horarios" => $c));
+	}
+
+	function QuitarHorarioClase($id_horario_clase)
+	{
+		$query = "UPDATE horario_clase SET status = 0 WHERE id_horario_clase = ?";
+		$params = array($id_horario_clase);
+		return $this->Conexiones->Update($query, $params);
 	}
 	//------------------------------------------------ REPORTES ----------------------------------------------------------------------
 
@@ -681,7 +740,8 @@ class Admin
 		CONCAT(i.nombre, ' ', i.apellido) as instructor,
 		i.telefono,
 		i.correo,
-		i.foto
+		i.foto,
+		i.descripcion
 		FROM instructor as i
 		WHERE i.id_instructor = :id_instructor
 		";
@@ -744,6 +804,17 @@ class Admin
         $file_path = imagepng($dst,$file_path); // adjust format as needed
         //move_uploaded_file($imagen["tmp_name"], $file_path);
         //--------------------------------- imagen -------------------------------------
+	}
+
+	function ActualizarInstructor($nombre, $usuario, $clave, $telefono, $correo, $descripcion)
+	{
+		$nombre_completo = explode(' ', $nombre);
+		$nombre = $nombre_completo[0];
+		$apellido = $nombre_completo[1];
+
+		$query = "UPDATE instructor SET clave = ?, nombre = ?, apellido = ?, descripcion = ?, telefono = ?, correo = ? WHERE usuario = ?";
+		$params = array($clave, $nombre, $apellido, $descripcion, $telefono, $correo, $usuario);
+		$this->Conexiones->Update($query, $params);
 	}
 	//------------------------------------------------ USUARIOS --------------------------
 }

@@ -2,7 +2,6 @@
 $dashboard = "";
 $suscripciones = "";
 $clases = "";
-$alta = "";
 $usuarios = "";
 $instructores = "";
 switch ($pag) {
@@ -14,9 +13,6 @@ switch ($pag) {
     break;
   case 'clases':
     $clases = "active";
-    break;
-  case 'alta':
-    $alta = "active";
     break;
   case 'usuarios':
     $usuarios = 'active';
@@ -57,12 +53,6 @@ switch ($pag) {
         <a class="nav-link" href="./instructores.php">
           <i class="material-icons">school</i>
           <p>Instructores</p>
-        </a>
-      </li>
-      <li class="nav-item <?php echo  $alta; ?>">
-        <a class="nav-link" href="./alta-clase.php">
-          <i class="material-icons">add</i>
-          <p>Dar de alta una clase</p>
         </a>
       </li>
       <li class="nav-item <?php echo  $usuarios; ?>">

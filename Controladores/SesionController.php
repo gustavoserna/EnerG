@@ -4,6 +4,10 @@ include("../Clases/Sesion.php");
 $op = $_POST["op"];
 $Sesion = new Sesion();
 
+if($op == "buscarSesion") {
+    echo trim($Sesion->buscarSesion());
+}
+
 if($op == "login"){
     echo $Sesion->login($_POST["usuario"], $_POST["clave"]);
 }

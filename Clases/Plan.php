@@ -14,11 +14,5 @@ class Plan {
         $params = array();
         return json_encode(array("planes" => $this->Conexiones->Select($query, $params)));
     }
-
-    function altaPlan($id_plan, $id_usuario){
-        $query = "INSERT INTO plan_usuario(id_plan, id_usuario) VALUES(?,?)";
-        $params = array($id_plan, $id_usuario);
-        return $this->Conexiones->Insert($query, $params);
-    }
 }
 ?>

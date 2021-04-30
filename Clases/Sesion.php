@@ -1,4 +1,5 @@
 <?php
+session_start();
 include("../Conexiones.php");
 
 class Sesion {
@@ -7,6 +8,22 @@ class Sesion {
 
     function __construct(){
         $this->Conexiones = new Conexiones();
+    }
+
+    function buscarSesion() {
+        if(isset($_SESSION["loggedin"])) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    function getUser() {
+        if(isset($_SESSION['perfil'])) {
+            return json_decode($_SESSION['perfil'], true);
+        } else {
+            return array("id_usuario" => 0);
+        }
     }
 
     function login($usuario, $clave){

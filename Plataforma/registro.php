@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(isset($_SESSION["loggedin"])){
-  echo "<meta http-equiv='refresh' content='0; URL=perfil.html'>"; 
+  echo "<meta http-equiv='refresh' content='0; URL=perfil.php'>"; 
   exit;
 }
 ?>
@@ -10,7 +10,7 @@ if(isset($_SESSION["loggedin"])){
 
 <head>
   <meta charset="utf-8">
-  <title>EnerG - Crea una cuenta</title>
+  <title>Vitallica - Crea una cuenta</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta content="" name="keywords">
   <meta content="" name="description">
@@ -38,6 +38,25 @@ if(isset($_SESSION["loggedin"])){
 
 <body>
 
+  <!--==========================
+    Header
+  ============================-->
+  <header id="header" style="background:#000;">
+    <div class="container">
+
+      <div id="logo" class="pull-left">
+        <a href="index.html" class="scrollto"><img src="img/logo.png" alt="" title=""></a>
+      </div>
+
+      <nav id="nav-menu-container">
+        <ul class="nav-menu">
+          <li class="menu-active"><a href="index.html">Inicio</a></li>
+          <li><a href="login.php">Iniciar sesión</a></li>
+        </ul>
+      </nav><!-- #nav-menu-container -->
+    </div>
+  </header><!-- #header -->
+
   <main id="main">
       
     <!--==========================
@@ -48,8 +67,8 @@ if(isset($_SESSION["loggedin"])){
       <div class="container">
 
         <div class="section-header">
-          <h2>Crea una cuenta en EnerG</h2>
-          <p>Crea una cuenta para agendar tu primer clase en EnerG.</p>
+          <br><br><br><br><h2>Crea una cuenta en Vitallica</h2>
+          <p>Crea una cuenta para agendar tu primer clase en Vitallica.</p>
         </div>
 
         <div class="form">
@@ -103,40 +122,27 @@ if(isset($_SESSION["loggedin"])){
       <div class="container">
         <div class="row">
 
-          <div class="col-lg-3 col-md-6 footer-info">
-            <img src="img/logo.png" alt="TheEvenet">
-            <p>In alias aperiam. Placeat tempore facere. Officiis voluptate ipsam vel eveniet est dolor et totam porro. Perspiciatis ad omnis fugit molestiae recusandae possimus. Aut consectetur id quis. In inventore consequatur ad voluptate cupiditate debitis accusamus repellat cumque.</p>
+          <div class="col-lg-6 col-md-6 footer-info">
+            <img src="img/logo.png" alt="Vitallica"><br><br>
+            <iframe src="https://maps.google.com/maps?q=itrain,%20san%20isidro,%20torreon&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0" style="border:0" allowfullscreen></iframe>
           </div>
 
           <div class="col-lg-3 col-md-6 footer-links">
-            <h4>Useful Links</h4>
+            <h4>Links</h4>
             <ul>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Home</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">About us</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Services</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Terms of service</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Privacy policy</a></li>
-            </ul>
-          </div>
-
-          <div class="col-lg-3 col-md-6 footer-links">
-            <h4>Useful Links</h4>
-            <ul>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Home</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">About us</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Services</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Terms of service</a></li>
-              <li><i class="fa fa-angle-right"></i> <a href="#">Privacy policy</a></li>
+              <li><i class="fa fa-angle-right"></i> <a href="#intro">Inicio</a></li>
+              <li><i class="fa fa-angle-right"></i> <a href="#about">Acerca de</a></li>
+              <li><i class="fa fa-angle-right"></i> <a href="#schedule">Reserva</a></li>
             </ul>
           </div>
 
           <div class="col-lg-3 col-md-6 footer-contact">
-            <h4>Contact Us</h4>
+            <h4>Contáctanos</h4>
             <p>
-              A108 Adam Street <br>
-              New York, NY 535022<br>
-              United States <br>
-              <strong>Phone:</strong> +1 5589 55488 55<br>
+              Calle Hamburgo #611, San Isidro <br>
+              Torreón Coahuila<br>
+              México <br>
+              <strong>Phone:</strong> 871 402 6482<br>
               <strong>Email:</strong> info@example.com<br>
             </p>
 
@@ -156,16 +162,12 @@ if(isset($_SESSION["loggedin"])){
 
     <div class="container">
       <div class="copyright">
-        &copy; Copyright <strong>TheEvent</strong>. All Rights Reserved
+        &copy; Copyright <strong>Vitallica</strong>.
       </div>
       <div class="credits">
-        <!--
-          All the links in the footer should remain intact.
-          You can delete the links only if you purchased the pro version.
-          Licensing information: https://bootstrapmade.com/license/
-          Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=TheEvent
-        -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        <script>
+          document.write(new Date().getFullYear())
+        </script>, desarrollado por SERLO Software
       </div>
     </div>
   </footer><!-- #footer -->

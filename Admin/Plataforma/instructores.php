@@ -186,7 +186,7 @@
   </div>
   <div id="ventana-instructor" class="fixed-top" style="visibility: hidden;">
     <div class="row justify-content-center">
-      <div class="col-md-5">
+      <div class="col-md-9">
         <div class="card card-chart">
           <div class="card-header card-header-info">
             <i id="close-ventana" class="material-icons" style="cursor:pointer;">close</i>
@@ -197,14 +197,18 @@
             <h4 class="card-title">Información del instructor</h4><hr>
             <p class="card-category">
               <div class="row">
-                <div class="col-md-5">
-                  <h6>Instructor</h6><p id="instructor"></p>
-                  <h6>Usuario</h6><p id="usuario"></p>
-                  <h6>Clave</h6><p id="clave"></p>
-                  <h6>Teléfono</h6><p id="telefono"></p>
-                  <h6>Correo</h6><p id="correo"></p>
+                <div class="col-md-3">
+                  <form id="form-actualizar-instructor">
+                    <h6>Instructor</h6><input type="text" class="form-control" id="instructor-ventana-i" name="nombre"><br>
+                    <h6>Usuario</h6><input type="text" class="form-control" id="usuario-ventana-i" disabled name="usuario"><br>
+                    <h6>Clave</h6><input type="text" class="form-control" id="clave-ventana-i" name="clave"><br>
+                    <h6>Teléfono</h6><input type="text" class="form-control" id="telefono-ventana-i" name="telefono"><br>
+                    <h6>Correo</h6><input type="text" class="form-control" id="correo-ventana-i" name="correo"><br>
+                    <h6>Descripción breve</h6><textarea class="form-control" id="descbreve-ventana-i" name="desc"></textarea><br>
+                    <button type="submit" class="btn btn-primary pull-left">Actualizar</button>
+                  </form>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-9">
                   <div class="table-responsive">
                     <table id="tabla-clases-info" class="table table-hover" width="100%">
                       <thead>
@@ -273,11 +277,12 @@
       {
         $("#ventana-instrcutor").show();
         $("#ventana-instructor").css("visibility", "visible");
-        $("#instructor").html(json["instructor"]["instructor"]);
-        $("#usuario").html(json["instructor"]["usuario"]);
-        $("#clave").html(json["instructor"]["clave"]);
-        $("#telefono").html(json["instructor"]["telefono"]);
-        $("#correo").html(json["instructor"]["correo"]);
+        $("#instructor-ventana-i").val(json["instructor"]["instructor"]);
+        $("#usuario-ventana-i").val(json["instructor"]["usuario"]);
+        $("#clave-ventana-i").val(json["instructor"]["clave"]);
+        $("#telefono-ventana-i").val(json["instructor"]["telefono"]);
+        $("#correo-ventana-i").val(json["instructor"]["correo"]);
+        $("#descbreve-ventana-i").val(json["instructor"]["descripcion"]);
 
         var clases = json["instructor"]["clases"];
         var table_body = "";
@@ -385,6 +390,28 @@
           $("#correo-i").val('');
           $("#descripcion-i").val('');
           $("#file").val('');
+        });
+      });
+
+      //actualizar instructor
+      $("#form-actualizar-instructor").on("submit", function(e)
+      {
+        e.preventDefault();
+        var f = $(this);
+        var formData = new FormData(document.getElementById("form-actualizar-instructor"));
+        formData.append("usuario", $("#usuario-ventana-i").val());
+        formData.append("op", "ActualizarInstructor");
+        $.ajax({
+          url: "../Backend/App.php",
+          type: "post",
+          dataType: "html",
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false
+        })
+        .done(function(res){
+          alert("Instructor actualizado.");
         });
       });
 

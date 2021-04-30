@@ -7,8 +7,4 @@ $Plan = new Plan();
 if($op == "getPlanes"){
     echo $Plan->getPlanes();
 }
-
-if($op == "altaPlan"){
-    echo $Plan->altaPlan($_GET["id_plan"], $_GET["id_usuario"]);
-}
 ?>
