@@ -27,6 +27,9 @@
   <!-- Main Stylesheet File -->
   <link href="css/style.css" rel="stylesheet">
 
+  <!-- Modales -->
+  <link rel="stylesheet" href="css/sweetalert.css">
+
 </head>
 
 <body>
@@ -52,7 +55,7 @@
           <li><a href="#gallery">Galería</a></li>
           <li><a href="#contact">Contacto</a></li>
           <li class="buy-tickets"><a href="#buy-tickets">Precios</a></li>
-          <li><a href="login.php"><img src="img/user.png" height="25px" /></a></li>
+          <li><a href="login.php"><img src="img/user.png" height="25px" /> <label id="clases-disponibles" style="color:white;"></label></a></li>
         </ul>
       </nav><!-- #nav-menu-container -->
     </div>
@@ -65,8 +68,8 @@
     <div class="intro-container wow fadeIn">
       <h1 class="mb-4 pb-0">Vitallica<br><span>Ve</span> Por Todo</h1>
       <p class="mb-4 pb-0">Sigamos adelante</p>
-      <a href="https://www.youtube.com/watch?v=jDDaplaOz7Q" class="venobox play-btn mb-4" data-vbtype="video"
-        data-autoplay="true"></a>
+      <!--<a href="https://www.youtube.com/watch?v=jDDaplaOz7Q" class="venobox play-btn mb-4" data-vbtype="video"
+        data-autoplay="true"></a>-->
       <a href="#about" class="about-btn scrollto">Ver un vídeo</a>
     </div>
   </section>
@@ -89,7 +92,7 @@
           </div>
           <div class="col-lg-3">
             <h3>Desde</h3>
-            <p>2020</p>
+            <p>2021</p>
           </div>
           <div class="col-lg-3">
             <h3>¿Dónde?</h3>
@@ -97,6 +100,144 @@
           </div>
         </div>
       </div>
+    </section>
+    
+    <!--==========================
+      Schedule Section
+    ============================-->
+    <section id="schedule">
+      <div class="container wow fadeInUp">
+        <div class="section-header">
+          <h2>Horarios</h2>
+          <p>Nuestros horarios de clases</p>
+        </div>
+
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" href="#Ride" role="tab" data-toggle="tab">Ride</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#Bootcamp" role="tab" data-toggle="tab">Bootcamp</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#Beatbox" role="tab" data-toggle="tab">Beatbox</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#Yoga" role="tab" data-toggle="tab">Yoga</a>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <div role="tabpanel" style="text-align:center;" class="col-lg-12 tab-pane fade show active" id="Ride"></div>
+          <div role="tabpanel" style="text-align:center;"  class="col-lg-12 tab-pane fade" id="Bootcamp"></div>
+          <div role="tabpanel" style="text-align:center;"  class="col-lg-12 tab-pane fade" id="Beatbox"></div>
+          <div role="tabpanel" style="text-align:center;"  class="col-lg-12 tab-pane fade" id="Yoga"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!--==========================
+      Seccion Planes
+    ============================-->
+    <section id="buy-tickets" class="section-with-bg wow fadeInUp">
+      <div class="container">
+
+        <div class="section-header">
+          <h2>Compra tu plan de entramiento ahora</h2>
+          <p>Elige el paquete que mas se adapte a tus necesidades.</p>
+        </div>
+
+        <div id="planes" class="row"></div>
+
+      </div>
+
+      <!-- Modal Order Form -->
+      <div id="buy-ticket-modal" class="modal fade">
+        <div class="modal-dialog"role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Compra tu plan</h4>
+              <button id="close-modal-orden" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <select id="plan-type" name="plan-type" class="form-control" >
+                  <option value="">-- Selecciona el plan a comprar --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <select id="metodos-pago" name="metodos-pago" class="form-control" >
+                  <option value="">-- Selecciona un método de pago --</option>
+                </select>
+              </div>
+              
+              <button type='button' class='btn' data-toggle='modal' data-target='#tarjeta-modal'>Agregar método de pago</button>
+              
+              <div class="text-right">
+                <button onclick="comprarPlan()" class="btn">Comprar</button>
+              </div>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <!-- Modal Confirmar Reservacion -->
+      <div id="confirmar-reservacion-modal" class="modal fade">
+        <div class="modal-dialog"role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Confirma tu reservación</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Clase</label>
+                <input class="form-control" id="clase-confirmar" disabled />
+              </div>
+              
+              <div class="form-group">
+                <label>Instructor</label>
+                <input class="form-control" id="instructor-confirmar" disabled />
+              </div>
+
+              <div class="form-group">
+                <label>Hora</label>
+                <input class="form-control" id="hora-confirmar" disabled />
+              </div>
+                            
+              <div class="text-right">
+                <button id="confirmar-reservacion-btn" class="btn">Confirmar</button>
+              </div>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <!-- Modal Tarjeta -->
+      <div id="tarjeta-modal" class="modal fade">
+        <div class="modal-dialog"role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 id="prueba" class="modal-title">Agrega un método de pago</h4>
+              <button id="close-modal-tarjeta" type="button" onclick="loadMetodosPago()" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- Card form -->
+              <embed id="card-form" type="text/html" src="card.html" width="100%" height="500">
+              <!-- Card form -->
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
     </section>
 
     <!--==========================
@@ -110,57 +251,6 @@
         </div>
 
         <div id="instructores" class="row"></div>
-      </div>
-
-    </section>
-
-    <!--==========================
-      Schedule Section
-    ============================-->
-    <section id="schedule" class="section-with-bg">
-      <div class="container wow fadeInUp">
-        <div class="section-header">
-          <h2>Horarios</h2>
-          <p>Nuestros horarios de clases</p>
-        </div>
-
-        <ul class="nav nav-tabs" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" href="#lunes" role="tab" data-toggle="tab">Lunes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#martes" role="tab" data-toggle="tab">Martes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#miercoles" role="tab" data-toggle="tab">Miércoles</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#jueves" role="tab" data-toggle="tab">Jueves</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#viernes" role="tab" data-toggle="tab">Viernes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#sabado" role="tab" data-toggle="tab">Sábado</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#domingo" role="tab" data-toggle="tab">Domingo</a>
-          </li>
-        </ul>
-
-        <h3 class="sub-heading">Selecciona el horario y la clase que mas prefieras, luego continua al proceso de reservación.<br>¡Es muy fácil!</h3>
-        
-        <!-- Horarios -->
-        <div class="tab-content row justify-content-center">
-          <div role="tabpanel" class="col-lg-9 tab-pane fade show active" id="lunes"></div>
-          <div role="tabpanel" class="col-lg-9 tab-pane fade" id="martes"></div>
-          <div role="tabpanel" class="col-lg-9 tab-pane fade" id="miercoles"></div>
-          <div role="tabpanel" class="col-lg-9 tab-pane fade" id="jueves"></div>
-          <div role="tabpanel" class="col-lg-9 tab-pane fade" id="viernes"></div>
-          <div role="tabpanel" class="col-lg-9 tab-pane fade" id="sabado"></div>
-          <div role="tabpanel" class="col-lg-9 tab-pane fade" id="domingo"></div>
-        </div>
-
       </div>
 
     </section>
@@ -190,79 +280,6 @@
     </section>
 
     <!--==========================
-      Seccion Planes
-    ============================-->
-    <section id="buy-tickets" class="section-with-bg wow fadeInUp">
-      <div class="container">
-
-        <div class="section-header">
-          <h2>Compra tu plan de entramiento ahora</h2>
-          <p>Elige el paquete que mas se adapte a tus necesidades.</p>
-        </div>
-
-        <div id="planes" class="row"></div>
-
-      </div>
-
-      <!-- Modal Order Form -->
-      <div id="buy-ticket-modal" class="modal fade">
-        <div class="modal-dialog"role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Compra tu plan</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="form-group">
-                <select id="plan-type" name="plan-type" class="form-control" >
-                  <option value="">-- Selecciona el plan a comprar --</option>
-                </select>
-              </div>
-              
-              <div class="form-group">
-                <input type="text" class="form-control" name="total" placeholder="Total" value="$180" disabled>
-              </div>
-              
-              <div class="form-group">
-                <select id="metodos-pago" name="metodos-pago" class="form-control" >
-                  <option value="">-- Selecciona un método de pago --</option>
-                </select>
-              </div>
-              
-              <button type='button' class='btn' data-toggle='modal' data-target='#tarjeta-modal'>Agregar método de pago</button>
-              
-              <div class="text-right">
-                <button onclick="comprarPlan()" class="btn">Comprar</button>
-              </div>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
-
-      <!-- Modal Tarjeta -->
-      <div id="tarjeta-modal" class="modal fade">
-        <div class="modal-dialog"role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Agrega un método de pago</h4>
-              <button type="button" onclick="loadMetodosPago()" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <!-- Card form -->
-              <embed id="card-form" type="text/html" src="card.html" width="100%" height="500">
-              <!-- Card form -->
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
-
-    </section>
-
-    <!--==========================
       Contact Section
     ============================-->
     <section id="contact" class="section-bg wow fadeInUp">
@@ -287,8 +304,9 @@
           <div class="col-md-4">
             <div class="contact-phone">
               <i class="ion-ios-telephone-outline"></i>
-              <h3>Teléfono</h3>
-              <p><a href="tel:+528714026482">871 402 6482</a></p>
+              <h3>Teléfonos</h3>
+              <p><a href="tel:+528712697637">871 269 7637</a></p>
+              <p><a href="tel:+528717825772">871 782 5772</a></p>
             </div>
           </div>
 
@@ -296,7 +314,7 @@
             <div class="contact-email">
               <i class="ion-ios-email-outline"></i>
               <h3>Email</h3>
-              <p><a href="mailto:info@example.com">info@example.com</a></p>
+              <p><a href="mailto:vitallicamx@outlook.com">vitallicamx@outlook.com</a></p>
             </div>
           </div>
 
@@ -362,8 +380,8 @@
               Calle Hamburgo #611, San Isidro <br>
               Torreón Coahuila<br>
               México <br>
-              <strong>Phone:</strong> 871 402 6482<br>
-              <strong>Email:</strong> info@example.com<br>
+              <strong>Teléfonos:</strong> 871 269 7637 | 871 782 5772<br>
+              <strong>Email:</strong> vitallicamx@outlook.com<br>
             </p>
 
             <div class="social-links">
@@ -413,6 +431,9 @@
 
   <!-- BE Controller -->
   <script src="js/indexController.js"></script>
+
+  <!-- Modales -->
+  <script src="js/sweetalert-dev.js"></script>
 </body>
 
 </html>

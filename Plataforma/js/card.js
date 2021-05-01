@@ -209,9 +209,6 @@ window.onload = function () {
         let randomNumber = Math.floor(Math.random() * testCards.length);
         cardnumber_mask.unmaskedValue = testCards[randomNumber];
     }
-    generatecard.addEventListener('click', function () {
-        randomCard();
-    });
     
     
     // CREDIT CARD IMAGE JS

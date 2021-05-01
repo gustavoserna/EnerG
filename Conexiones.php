@@ -12,6 +12,14 @@ class Conexiones
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //make the default fetch be an associative array
 		];
 		$this->dbh = new PDO($dsn, "root", "", $options);
+
+		/*$dsn = "mysql:host=173.201.185.119;dbname=vitallica;charset=utf8mb4";
+		$options = [
+			PDO::ATTR_EMULATE_PREPARES   => true, // turn off emulation mode for "real" prepared statements
+			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //turn on errors in the form of exceptions
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //make the default fetch be an associative array
+		];
+		$this->dbh = new PDO($dsn, "vitallica", "Vitallica2021", $options);*/
 	}
 
 	function Select($q, $parametros)
@@ -192,6 +200,7 @@ class Conexiones
 	        $sql = 'CALL CancelarClase
 	        (
 				:id_usuario_clase,
+				:id_usuario,
 				@respuesta
 			)';
 
@@ -200,6 +209,7 @@ class Conexiones
 
 	        // pass value to the command
 			$stmt->bindParam(':id_usuario_clase', $params[0], PDO::PARAM_STR);
+			$stmt->bindParam(':id_usuario', $params[1], PDO::PARAM_STR);
 	        // execute the stored procedure
 	        $stmt->execute();
 

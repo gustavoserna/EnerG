@@ -22,7 +22,7 @@
   <?php
   if(isset($_SESSION["loggedin"]))
   {
-    echo "<meta http-equiv='refresh' content='0; URL=dashboard.php'>"; 
+    echo "<meta http-equiv='refresh' content='0; URL=index.php'>"; 
     exit;
   }
   ?>
@@ -101,7 +101,7 @@
           }
           else
           {
-            window.location.href = 'dashboard.php';
+            window.location.href = 'index.php';
           }
         });
     });

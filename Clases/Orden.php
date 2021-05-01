@@ -1,7 +1,7 @@
 <?php
 include("Sesion.php");
 require_once("../Conekta/lib/Conekta.php");
-\Conekta\Conekta::setApiKey("key_zEpPw1URmk9zL9Su2bD34Q");
+\Conekta\Conekta::setApiKey("key_Hyy8WJ6aUqM5qSDERyjjYw");
 \Conekta\Conekta::setApiVersion("2.0.0");
 
 class Orden extends Sesion
@@ -22,55 +22,132 @@ class Orden extends Sesion
 		$handlerError = "";
 
 		try {
-			//get datos de conekta
-			$query = "
-			SELECT 
-			u.customer_conekta,
-			(SELECT id_tarjeta_conekta FROM tarjeta WHERE id_tarjeta = :id_tarjeta) as id_tarjeta_conekta
-			FROM usuario as u
-			WHERE u.id_usuario = :id_usuario";
-			$parametros = array(array("id_usuario", $this->id_usuario), array("id_tarjeta", $id_tarjeta));
-			$c = $this->Conexiones->Select($query, $parametros);
-			$customer_conekta = $c[0]["customer_conekta"];
-			$id_tarjeta_conekta = $c[0]["id_tarjeta_conekta"];
+			//buscar si es plan de prueba
+			if($id_plan == "1") {
+				$query = "SELECT * FROM plan_usuario WHERE id_usuario = :id_usuario AND id_plan = 1";
+				$params = array(array("id_usuario", $this->id_usuario));
+				$c = $this->Conexiones->Select($query, $params);
 
-			//obtener datos del plan
-			$query = "SELECT * FROM plan WHERE id_plan = :id_plan";
-			$parametros = array(array("id_plan", $id_plan));
-			$plan = $this->Conexiones->Select($query, $parametros);
+				if(sizeof($c) >= 1) {
+					return "agotado";
+				} else {
+					//buscar si existe un plan activo
+					$query = "SELECT * FROM plan_usuario WHERE id_usuario = :id_usuario AND status = 1";
+					$params = array(array("id_usuario", $this->id_usuario));
+					$c = $this->Conexiones->Select($query, $params);
 
-			//arreglo de articulos conekta
-			$arr_conekta = array();
-			array_push($arr_conekta, array('name' => $plan[0]["plan"], 'unit_price' => $plan[0]["precio"] * 100, 'quantity' => 1));
+					if(sizeof($c) > 0) {
+						return "plan_activo";
+					} else {
+						//get datos de conekta
+						$query = "
+						SELECT 
+						u.customer_conekta,
+						(SELECT id_tarjeta_conekta FROM tarjeta WHERE id_tarjeta = :id_tarjeta) as id_tarjeta_conekta
+						FROM usuario as u
+						WHERE u.id_usuario = :id_usuario";
+						$parametros = array(array("id_usuario", $this->id_usuario), array("id_tarjeta", $id_tarjeta));
+						$c = $this->Conexiones->Select($query, $parametros);
+						$customer_conekta = $c[0]["customer_conekta"];
+						$id_tarjeta_conekta = $c[0]["id_tarjeta_conekta"];
 
-			//hacer cargo
-			\Conekta\Order::create
-			(
-				[
-					'currency' => 'MXN',
-					'customer_info' => 
-					[
-						'customer_id' => $customer_conekta
-					],
-					'line_items' => $arr_conekta,
-					'charges' => 
-					[
-						[
-							'payment_method' => 
+						//obtener datos del plan
+						$query = "SELECT * FROM plan WHERE id_plan = :id_plan";
+						$parametros = array(array("id_plan", $id_plan));
+						$plan = $this->Conexiones->Select($query, $parametros);
+
+						//arreglo de articulos conekta
+						$arr_conekta = array();
+						array_push($arr_conekta, array('name' => $plan[0]["plan"], 'unit_price' => $plan[0]["precio"] * 100, 'quantity' => 1));
+
+						//hacer cargo
+						\Conekta\Order::create
+						(
 							[
-								'type' => 'card',
-								'payment_source_id' => $id_tarjeta_conekta
+								'currency' => 'MXN',
+								'customer_info' => 
+								[
+									'customer_id' => $customer_conekta
+								],
+								'line_items' => $arr_conekta,
+								'charges' => 
+								[
+									[
+										'payment_method' => 
+										[
+											'type' => 'card',
+											'payment_source_id' => $id_tarjeta_conekta
+										]
+									]
+								]
+							]
+						);
+
+						//insertar plan al usuario
+						$query = "INSERT INTO plan_usuario(id_plan, id_usuario, clases_disponibles) VALUES(?,?,?)";
+						$params = array($id_plan, $this->id_usuario, $plan[0]["total_clases"]);
+						return $this->Conexiones->Insert($query, $params);
+					}
+				}
+			} else {
+				//buscar si existe un plan activo
+				$query = "SELECT * FROM plan_usuario WHERE id_usuario = :id_usuario AND status = 1";
+				$params = array(array("id_usuario", $this->id_usuario));
+				$c = $this->Conexiones->Select($query, $params);
+
+				if(sizeof($c) > 0) {
+					return "plan_activo";
+				} else {
+					//get datos de conekta
+					$query = "
+					SELECT 
+					u.customer_conekta,
+					(SELECT id_tarjeta_conekta FROM tarjeta WHERE id_tarjeta = :id_tarjeta) as id_tarjeta_conekta
+					FROM usuario as u
+					WHERE u.id_usuario = :id_usuario";
+					$parametros = array(array("id_usuario", $this->id_usuario), array("id_tarjeta", $id_tarjeta));
+					$c = $this->Conexiones->Select($query, $parametros);
+					$customer_conekta = $c[0]["customer_conekta"];
+					$id_tarjeta_conekta = $c[0]["id_tarjeta_conekta"];
+
+					//obtener datos del plan
+					$query = "SELECT * FROM plan WHERE id_plan = :id_plan";
+					$parametros = array(array("id_plan", $id_plan));
+					$plan = $this->Conexiones->Select($query, $parametros);
+
+					//arreglo de articulos conekta
+					$arr_conekta = array();
+					array_push($arr_conekta, array('name' => $plan[0]["plan"], 'unit_price' => $plan[0]["precio"] * 100, 'quantity' => 1));
+
+					//hacer cargo
+					\Conekta\Order::create
+					(
+						[
+							'currency' => 'MXN',
+							'customer_info' => 
+							[
+								'customer_id' => $customer_conekta
+							],
+							'line_items' => $arr_conekta,
+							'charges' => 
+							[
+								[
+									'payment_method' => 
+									[
+										'type' => 'card',
+										'payment_source_id' => $id_tarjeta_conekta
+									]
+								]
 							]
 						]
-					]
-				]
-			);
+					);
 
-			//insertar plan al usuario
-			$query = "INSERT INTO plan_usuario(id_plan, id_usuario, clases_disponibles) VALUES(?,?,?)";
-        	$params = array($id_plan, $this->id_usuario, $plan[0]["total_clases"]);
-        	return $this->Conexiones->Insert($query, $params);
-
+					//insertar plan al usuario
+					$query = "INSERT INTO plan_usuario(id_plan, id_usuario, clases_disponibles) VALUES(?,?,?)";
+					$params = array($id_plan, $this->id_usuario, $plan[0]["total_clases"]);
+					return $this->Conexiones->Insert($query, $params);
+				}
+			}
 		} 
 		catch (\Conekta\ProccessingError $error)
 		{

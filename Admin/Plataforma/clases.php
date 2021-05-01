@@ -74,7 +74,7 @@
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" href="#horarios" data-toggle="tab">
-                          <i class="material-icons">add</i> Horarios
+                          <i class="material-icons">schedule</i> Horarios
                           <div class="ripple-container"></div>
                         </a>
                       </li>
@@ -154,7 +154,8 @@
                         <th>Día</th>
                         <th>Horario</th>
                         <th>Fecha</th>
-                        <th>Acción</th>
+                        <th>Lista horarios</th>
+                        <th>Reservaciones</th>
                       </thead>
                       <tbody id="table-horarios-clases-body">
                       </tbody>
@@ -258,6 +259,40 @@
     </div>
   </div>
 
+  <div id="ventana-reservaciones" class="fixed-top" style="visibility: hidden;">
+    <div class="row justify-content-center">
+      <div class="col-md-7">
+        <div class="card card-chart">
+          <div class="card-header card-header-info">
+            <i id="close-ventana-reservaciones" class="material-icons" style="cursor:pointer;">close</i>
+            <h4 class="card-title" id="reservaciones-header"></h4>
+            <p class="card-category">Reservaciones para este horario</p>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Reservaciones</h4><hr>
+            <p class="card-category">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="table-responsive">
+                    <table id="tabla-clase-reservaciones" class="table table-hover" width="100%">
+                      <thead>
+                        <tr>
+                          <th><b>Nombre</b></th>
+                          <th><b>Teléfono</b></th>
+                        </tr>
+                      </thead>
+                      <tbody id="table-clase-reservaciones-body"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="ventana-agregar-horario" class="fixed-top" style="visibility: hidden;">
     <div class="row justify-content-center">
       <div class="col-md-7">
@@ -272,7 +307,7 @@
             <p class="card-category">
               <div class="row">
                 <div class="col-md-12">
-                  <form>
+                  <form id="agregar-horario" method="post">
                     <div class="form-group">
                       <label class="bmd-label-floating">Clase</label>
                       <select id="clases" class="form-control"></select>
@@ -285,7 +320,7 @@
 
                     <div class="form-group">
                       <label class="bmd-label-floating">Fecha y hora</label>
-                      <input type="text" class="form-control datetimepicker" id="fecha-clase-i" />
+                      <input type="text" name="fecha" class="form-control datetimepicker" id="fecha-clase-i" />
                     </div>
 
                     <button type="submit" class="btn btn-primary pull-right">Guardar</button>
@@ -341,7 +376,7 @@
     function showVentanaClase(id_clase)
     {
       $("#ventana-clase").show();
-        $("#ventana-clase").css("visibility", "visible");
+      $("#ventana-clase").css("visibility", "visible");
     }
 
     function showVentanaHorario(id_clase)
@@ -437,12 +472,38 @@
               { data: "dia" },
               { data: "horario" },
               { data: "fecha" },
-              { data: "otros" }
+              { data: "otros" },
+              { data: "reservaciones" }
             ]
           });
         } 
       });
     }
+
+    function verReservaciones(id_horario_clase) 
+    {
+      var post_url = "../Backend/App.php";
+      var form_data = "op=GetReservacionesHorario&id_horario_clase=" + id_horario_clase;
+      $.post(post_url, form_data, function(json)
+      {
+        $("#ventana-reservaciones").show();
+        $("#ventana-reservaciones").css("visibility", "visible");
+
+        var usuarios = json["usuarios"];
+        var table_body = "";
+        for(var i = 0; i < usuarios.length; i++)
+        {
+          table_body += "<tr><td>" + usuarios[i]["nombre"] + "</td>" + "<td>" + usuarios[i]["telefono"] + "</td>" + "</tr>";
+        }
+        $("#table-clase-reservaciones-body").html(table_body);
+      });
+    }
+
+    $("#close-ventana-reservaciones").click(function(event)
+      {
+        $("#ventana-reservaciones").hide();
+        $("#ventana-reservaciones").css("visibility", "hidden"); 
+    });
 
     $("#close-ventana-horario").click(function(event)
       {
@@ -459,6 +520,15 @@
   <script>
     $(document).ready(function() 
     { 
+      $('#tabla-clase-horario').DataTable({
+        "scrollY":"300px",
+        "scrollCollapse":true,
+        "paging":false,
+        "searching":false,
+        "ordering":false,
+        "info":false
+      });
+
       //load fechas
       $('.datetimepicker').datetimepicker({
         icons: {
@@ -492,6 +562,44 @@
         "searching":false,
         "ordering":false,
         "info":false
+      });
+
+      $('#tabla-clase-reservaciones').DataTable({
+        "scrollY":"300px",
+        "scrollCollapse":true,
+        "paging":false,
+        "searching":false,
+        "ordering":false,
+        "info":false
+      });
+
+      //agregar horario
+      $("#agregar-horario").on("submit", function(e)
+      {
+        var clases = document.getElementById("clases");
+        var clase = clases.options[clases.selectedIndex].getAttribute("id");
+
+        var instructores = document.getElementById("instructores");
+        var instructor = instructores.options[instructores.selectedIndex].getAttribute("id");
+
+        e.preventDefault();
+        var f = $(this);
+        var formData = new FormData(document.getElementById("agregar-horario"));
+        formData.append("op", "AgregarHorario");
+        formData.append("clase", clase);
+        formData.append("instructor", instructor);
+        $.ajax({
+          url: "../Backend/App.php",
+          type: "post",
+          dataType: "html",
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false
+        })
+        .done(function(res){
+          alert(res);
+        });
       });
 
       //alta clase

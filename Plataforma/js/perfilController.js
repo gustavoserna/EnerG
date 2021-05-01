@@ -1,5 +1,24 @@
+function getClasesDisponibles() {
+    try {
+        $.ajax({
+            "url": "../Controladores/UsuarioController.php", 
+            "type": "POST",
+            "data": {
+              op: "getCreditosUsuario"
+            },     
+            success : function(data) {
+                $("#clases").val(data + " ");
+            } 
+        });
+    } catch (error) {
+        console.error("sin sesion");
+    }
+}
+
 $(document).ready(function() 
 {   
+    getClasesDisponibles();
+
     //get perfil
     $.ajax({
         "url": "../Controladores/UsuarioController.php", 
@@ -71,6 +90,35 @@ function cerrarSesion() {
     });
 }
 
+function cancelarClase(id_usuario_clase, clase_titulo, horario_inicio, instructor) {
+    $("#clase").val(clase_titulo);
+    $("#instructor").val(instructor);
+    $("#hora").val(horario_inicio);
+
+    $("#cancelar-clase-btn").on("click", function () {
+        confirmarCancelarClase(id_usuario_clase);
+    });
+}
+
+function confirmarCancelarClase(id_usuario_clase) {
+    $.ajax({
+        "url": "../Controladores/ClaseController.php", 
+        "type": "POST",
+        "data": {
+        op: "cancelarClase",
+        id_usuario_clase: id_usuario_clase
+        },     
+        success : function(data) {
+            if(data == "0") { 
+                swal("Lo sentimos", "Sólo tienes 3 horas para cancelar tu clase.", "error");
+            } else {
+                swal("Listo", "Clase cancelada.", "success");
+                loadClases();
+            }
+        } 
+    });
+}
+
 function loadClases(){
 
     //clases programadas
@@ -85,6 +133,7 @@ function loadClases(){
             var clases = JSON.parse(data);
 
             clases.clases.forEach(clase => {
+                var id_usuario_clase = clase["id_usuario_clase"];
                 var clase_titulo = clase["clase"];
                 var horario_inicio = clase["horario_inicio"];
                 var fecha = clase["fecha"];
@@ -105,7 +154,7 @@ function loadClases(){
                     "</div>" +
                     "<div class='col-md-2'>" +
                     "<div class='text-center'>" +
-                        "<button type='button' class='btn' data-toggle='modal' data-target='#cancelar-modal'>Cancelar</button>" +
+                        "<button onclick=\"cancelarClase('" + id_usuario_clase + "', '" + clase_titulo + "','" + horario_inicio + "','" + instructor + "')\" type='button' class='btn' data-toggle='modal' data-target='#cancelar-modal'>Cancelar</button>" +
                     "</div>" +
                 "</div>");
             });

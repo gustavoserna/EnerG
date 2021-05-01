@@ -19,7 +19,7 @@ class Sesion {
     }
 
     function getUser() {
-        if(isset($_SESSION['perfil'])) {
+        if(isset($_SESSION['loggedin'])) {
             return json_decode($_SESSION['perfil'], true);
         } else {
             return array("id_usuario" => 0);

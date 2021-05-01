@@ -53,14 +53,6 @@ class Admin
 
 	    return json_encode($c[0]);
 	}
-
-	function GetEstablecimientos()
-	{
-		$query =  "SELECT * FROM establecimiento WHERE status = 1 ORDER BY establecimiento ASC";
-		$parametros = array();
-		return json_encode(array("establecimientos" => $this->Conexiones->Select($query, $parametros)));
-	}
-
 	//------------------------------------------------ GRAFICAS --------------------------------------------------------------------
 	function GetGraficaVDiarias()
 	{
@@ -189,62 +181,22 @@ class Admin
 		return json_encode(array("suscripciones" => $c));
 	}
 
-	function GetReportesFiltrados($del, $al)
+	function GetReservacionesHorario($id_horario_clase) 
 	{
-		$del = date("Y-m-d", strtotime($del));
-		$al = date("Y-m-d", strtotime($al));
-
-		$op = "5";
 		$query = 
 		"
 		SELECT 
-		v.id_venta,
-		v.costo_envio,
-		v.costo_servicio,
-		TRUNCATE(SUM(vd.precio_proveedor * vd.cantidad), 2) as pagar_caja,
-		TRUNCATE(SUM(vd.precio_articulo * vd.cantidad), 2) as subtotal,
-		v.descuento,
-		v.total,
-		IF(v.id_metodo_pago > 0, 'Tarjeta', 'Efectivo') as metodo_pago,
-		v.fecha_venta,
-		u.nombre,
-		(
-			SELECT le.estado FROM estado_pedido as ep 
-			LEFT JOIN lista_estados as le ON le.id_estado = ep.id_estado
-			WHERE ep.id_venta = v.id_venta
-			ORDER by ep.id_estado_pedido DESC LIMIT 1
-		) as estado
-		FROM venta as v
-		LEFT JOIN venta_detalle as vd ON vd.id_venta = v.id_venta
-		LEFT JOIN usuario as u ON u.id_usuario = v.id_usuario
-		INNER JOIN configuracion as conf
-		WHERE
-		(
-			SELECT le.id_estado FROM estado_pedido as ep 
-			LEFT JOIN lista_estados as le ON le.id_estado = ep.id_estado
-			WHERE ep.id_venta = v.id_venta
-			ORDER by ep.id_estado_pedido DESC LIMIT 1
-		) = :op
-		AND DATE(v.fecha_venta) BETWEEN DATE(:del) AND DATE(:al)
-		GROUP BY v.id_venta
-		ORDER by v.id_venta DESC
+		CONCAT(u.nombre, ' ', u.apellido) as nombre,
+		u.telefono
+		FROM horario_clase as hc
+		LEFT JOIN usuario_clase as uc ON uc.id_horario_clase = hc.id_horario_clase
+		LEFT JOIN usuario as u ON u.id_usuario = uc.id_usuario
+		WHERE hc.id_horario_clase = :id_horario_clase
 		";
-		$parametros = array(
-			array("op", $op),
-			array("del", $del),
-			array("al", $al)
-		);
-		$c = $this->Conexiones->Select($query, $parametros);
+		$params = array(array("id_horario_clase", $id_horario_clase));
+		$c = $this->Conexiones->Select($query, $params);
 
-		error_log("respuesta: ".json_encode($c));
-
-		for($i = 0; $i < sizeof($c); $i++)
-		{
-			$id_pedido = $c[$i]["id_venta"];
-			$c[$i]["otros"] = 
-			'<button type="button" rel="tooltip" title="Información del pedido" class="btn btn-success btn-link btn-sm" onclick="showVentanaPedido(\''.$id_pedido.'\')"><i class="material-icons">launch</i></button>';
-		}
-		return '{ "pedidos": '.json_encode($c)."}";
+		return json_encode(array("usuarios" => $c));
 	}
 
 	function GetHorariosClases()
@@ -254,7 +206,7 @@ class Admin
 		SELECT
 		c.id_clase, c.clase,
 		CONCAT(i.nombre, ' ', i.apellido) as instructor,
-		hc.dia, CONCAT(hc.horario_inicio, ' - ', hc.horario_fin) as horario, hc.fecha
+		hc.id_horario_clase, hc.dia, CONCAT(hc.horario_inicio, ' - ', hc.horario_fin) as horario, hc.fecha
 		FROM clase as c
 		LEFT JOIN horario_clase as hc ON hc.id_clase = c.id_clase
 		LEFT JOIN instructor as i ON i.id_instructor = hc.id_instructor
@@ -267,8 +219,11 @@ class Admin
 		for($i = 0; $i < sizeof($c); $i++)
 		{
 			$id_clase = $c[$i]["id_clase"];
+			$id_horario_clase = $c[$i]["id_horario_clase"];
 			$c[$i]["otros"] = 
 			'<button type="button" rel="tooltip" title="Modificar horario" class="btn btn-success btn-link btn-sm" onclick="showVentanaHorario(\''.$id_clase.'\')"><i class="material-icons">launch</i></button>';
+			$c[$i]["reservaciones"] = 
+			'<button type="button" rel="tooltip" title="Reservaciones" class="btn btn-success btn-link btn-sm" onclick="verReservaciones(\''.$id_horario_clase.'\')"><i class="material-icons">launch</i></button>';
 		}
 
 		return json_encode(array("horarios" => $c));
@@ -310,86 +265,6 @@ class Admin
 	//------------------------------------------------ REPORTES ----------------------------------------------------------------------
 
 	//------------------------------------------------ PEDIDO ----------------------------------------------------------------------
-	function GetPedidosActivosRepartidores()
-	{
-		$query = "
-		SELECT 
-		v.id_venta,
-		v.id_metodo_pago,
-		(v.subtotal / config.porc_ganancia) as total_pagar,
-		(v.total) as total_cobrar,
-		v.fecha_venta,
-		d_ent.direccion as direccion_entrega,
-		d_ent.latitud,
-		d_ent.longitud,
-		(
-			SELECT le.estado FROM estado_pedido as e 
-			LEFT JOIN lista_estados as le ON le.id_estado = e.id_estado
-			WHERE e.id_venta = v.id_venta ORDER by e.id_estado_pedido DESC LIMIT 1	
-		) as pedido_estado,
-		(
-			SELECT veh.vehiculo FROM vehiculo as veh
-			LEFT JOIN vehiculo_repartidor as vr ON vr.id_vehiculo = veh.id_vehiculo
-			WHERE vr.id_vehiculo_repartidor = v.id_vehiculo_repartidor
-		) as vehiculo,
-		CONCAT(r.nombre, ' ', r.apellidos) as nombre_repartidor,
-		r.id_repartidor,
-		(
-			SELECT u.nombre FROM usuario as u WHERE u.id_usuario = v.id_usuario
-		) as cliente,
-		(
-			SELECT u.telefono FROM usuario as u WHERE u.id_usuario = v.id_usuario
-		) as telefono,
-		(
-			SELECT 
-			CONCAT('- ', GROUP_CONCAT(DISTINCT e.establecimiento SEPARATOR '\r\n- ')) 
-			FROM venta_detalle as vd 
-			LEFT JOIN establecimiento as e ON e.id_establecimiento = vd.id_establecimiento
-			WHERE vd.id_venta = v.id_venta 
-			GROUP by vd.id_venta
-		) as proveedores,
-		config.costo_envio
-		FROM venta as v
-		LEFT JOIN direccion_usuario as d_ent ON d_ent.id_direccion = v.id_direccion_entrega
-		LEFT JOIN repartidor as r on r.id_repartidor = v.id_repartidor
-		INNER JOIN configuracion as config
-		WHERE 
-		(
-			SELECT le.id_estado FROM estado_pedido as ep 
-			LEFT JOIN lista_estados as le ON le.id_estado = ep.id_estado
-			WHERE ep.id_venta = v.id_venta
-			ORDER by ep.id_estado_pedido DESC LIMIT 1
-		) < 5
-		ORDER by v.id_venta DESC
-		";
-		$parametros = array();
-		$consulta = $this->Conexiones->Select($query, $parametros);
-
-		//agregar articulos
-		for($i = 0; $i < sizeof($consulta); $i++)
-		{
-			$Con = new Conexiones();
-			$query = "
-			SELECT 
-			a.articulo,
-			TRUNCATE((vd.precio_articulo), 2) as precio,
-			vd.cantidad,
-			u.unidad,
-			(SELECT imagen FROM imagen_articulo WHERE id_articulo = vd.id_articulo ORDER by id_imagen DESC LIMIT 1) as imagen_principal
-			FROM venta_detalle as vd
-			LEFT JOIN articulo as a ON a.id_articulo = vd.id_articulo
-			LEFT JOIN unidad_articulo as ua ON ua.id_unidad_articulo = vd.id_unidad_articulo
-			LEFT JOIN unidad as u ON u.id_unidad = ua.id_unidad_
-			WHERE vd.id_venta = :id_pedido
-			";
-			$parametros = array(array("id_pedido", $consulta[$i]["id_venta"]));
-			$articulos = $this->Conexiones->Select($query, $parametros);
-			$consulta[$i]["articulos"] = $articulos;
-		}
-
-		return json_encode(array("pedidos" => $consulta));
-	}
-
 	function GetSuscripcion($id_suscripcion)
 	{
 		$query = 
@@ -432,230 +307,9 @@ class Admin
 
 		return json_encode(array("suscripcion" => $consulta[0]));
 	}
-
-	function SetEstadoPedido($id_pedido, $id_estado)
-	{
-		$query = "INSERT INTO estado_pedido(id_venta, id_estado) VALUES(?,?)";
-		$parametros = array($id_pedido, $id_estado);
-		$c = $this->Conexiones->Insert($query, $parametros);
-		return json_encode("actualizado");
-	}
-
-	function ReasignarPedido($id_establecimiento, $id_pedido)
-	{
-		$parametros = array($id_establecimiento, $id_pedido);
-		return json_encode($this->Conexiones->ReasignarPedidoProc($parametros));
-	}
 	//------------------------------------------------ PEDIDO --------------------------
 
 	//------------------------------------------------ PRODUCTO --------------------------
-	function GetProductos($id_cat)
-	{
-		$where_clause = "WHERE a.id_categoria = :id_cat";
-
-		if($id_cat == "15")
-		{
-			$where_clause = "WHERE a.id_categoria != :id_cat";
-		}
-
-		$query = "
-		SELECT
-		a.id_articulo,
-		a.articulo,
-		CONCAT
-		(
-			'<img height=\'70px\' src=\'https://app.vapa-ya.com/Imagenes/' ,(SELECT imagen FROM imagen_articulo WHERE id_articulo = a.id_articulo ORDER by id_imagen DESC LIMIT 1), '\'/>'
-		) as imagen_principal,
-		IFNULL(ea.precio_establecimiento, 'No seleccionado') as precio, 
-		TRUNCATE(IFNULL((
-			SELECT 
-			(MIN(precio_establecimiento) * config.porc_ganancia) 
-			FROM establecimiento_articulo
-			WHERE id_articulo = a.id_articulo
-		), 0), 2) as precio_promedio,
-		(
-			CONCAT
-			(
-				'<div class=\'form-check\'><label class=\'form-check-label\'><input class=\'form-check-input\' type=\'checkbox\'
-						',
-							IF(IFNULL((
-							ea.status
-							), 0) = 0, 'unchecked', 'checked')
-						,' onclick=\'checkProducto(',a.id_articulo,')\'/>
-						<span class=\'form-check-sign\'><span class=\'check\'></span></span></label>
-						<button type=\'button\' rel=\'tooltip\' title=\'Información del pedido\' class=\'btn btn-success btn-link btn-sm\' onclick=\'showVentanaProducto(',a.id_articulo,')\'><i class=\'material-icons\'>create</i></button>
-						</div>
-						'
-			)
-		) as checked
-		FROM articulo as a
-		LEFT JOIN establecimiento_articulo as ea ON ea.id_articulo = a.id_articulo AND ea.id_establecimiento = :id_establecimiento2
-		INNER JOIN configuracion as config
-        $where_clause
-		";
-		$parametros = array(array("id_cat", $id_cat), array("id_establecimiento2", $this->id_establecimiento));
-		$c = $this->Conexiones->Select($query, $parametros);
-
-		//error_log("prods: ".json_encode($c));
-		return json_encode(array("productos" => $c));
-	}
-
-	function GetCategorias()
-	{
-		$query = "SELECT * FROM categoria";
-		$parametros = array();
-		$c = $this->Conexiones->Select($query, $parametros);
-		$c = array("categorias" => $c);
-
-		array_push($c["categorias"], array("categoria" => "Todos", "id_categoria" => 15));
-
-		//error_log(json_encode($c));
-		return json_encode($c);
-	}
-
-	function GetUnidades()
-	{
-		$query = "SELECT * FROM unidad";
-		$parametros = array();
-		$c = $this->Conexiones->Select($query, $parametros);
-
-		return json_encode(array("unidades" => $c));
-	}
-
-	function GetSubCategorias($id_categoria)
-	{
-		$query = "SELECT * FROM subcategoria WHERE id_categoria = :id_categoria";
-		$parametros = array(array("id_categoria", $id_categoria));
-		$c = $this->Conexiones->Select($query, $parametros);
-
-		return json_encode(array("subcategorias" => $c));
-	}
-
-	function CheckProducto($id_articulo)
-	{
-		$parametros = array($this->id_establecimiento, $id_articulo);
-		$this->Conexiones->CheckProductoProc($parametros);
-	}
-
-	function GetArticulo($id_articulo)
-	{
-		$query = 
-		"
-		SELECT
-		a.id_articulo,
-		a.articulo,
-		a.precio,
-		a.id_categoria,
-		a.id_subcategoria,
-		a.descripcion,
-		u.id_unidad_,
-		u.id_unidad_articulo,
-		(SELECT imagen FROM imagen_articulo WHERE id_articulo = a.id_articulo ORDER by id_imagen DESC LIMIT 1) as imagen_principal,
-		IFNULL((
-			SELECT precio_establecimiento
-			FROM establecimiento_articulo
-			WHERE id_articulo = a.id_articulo
-			AND id_establecimiento = :id_establecimiento
-		), 0) as tu_precio
-		FROM articulo as a 
-		LEFT JOIN unidad_articulo as u ON u.id_articulo = a.id_articulo
-		WHERE a.id_articulo = :id_articulo
-		";
-		$parametros = array(array("id_articulo", $id_articulo), array("id_establecimiento", $this->id_establecimiento));
-		$c = $this->Conexiones->Select($query, $parametros);
-		return json_encode($c[0]);
-	}
-
-	function UpdateArticulo($id_articulo, $precio, $descripcion, $articulo, $categoria, $subcategoria, $unidad, $id_unidad_articulo)
-	{
-		//update articulo
-		$query = "
-		UPDATE articulo 
-		SET descripcion = ?,
-		articulo = ?,
-		id_categoria = ?,
-		id_subcategoria = ? 
-		WHERE id_articulo = ?
-		";
-		$parametros = array($descripcion, $articulo, $categoria, $subcategoria, $id_articulo);
-		$this->Conexiones->Update($query, $parametros);
-
-		//update establecimiento articulo
-		$Con = new Conexiones();
-		$query = "
-		UPDATE establecimiento_articulo 
-		SET precio_establecimiento = ?
-		WHERE id_establecimiento = ? AND id_articulo = ?
-		";
-		$parametros = array($precio, $this->id_establecimiento, $id_articulo);
-		$Con->Update($query, $parametros);
-
-		//update unidad articulo
-		$Con = new Conexiones();
-		$query = "UPDATE unidad_articulo SET id_unidad_ = ? WHERE id_unidad_articulo = ? AND id_articulo = ?
-		";
-		$parametros = array($unidad, $id_unidad_articulo, $id_articulo);
-		return $Con->Update($query, $parametros);
-	}
-
-	function UpdateImagenProducto($id_art, $imagen)
-	{
-		error_log("imagen ".$imagen);
-		$upload_path = '../../app/Imagenes/';
-        //--------------------------------- imagen grande -------------------------------------
-        $img_name = $id_art."_img.png";
-        //file path to upload in the server 
-        $file_path = $upload_path . $img_name;  
-        $file = $imagen["tmp_name"];
-        $size = getimagesize($file);
-        $width0 = $size[0];
-        $height0 = $size[1];
-        $ratio = $width0/$height0;
-        
-        if($width0 > 300){
-            $width = 300;
-            $height = 300/$ratio;
-        }else{
-            $width = 300;
-            $height = 300/$ratio;
-        }
-        $src = imagecreatefromstring(file_get_contents($file));
-		$dst = imagecreatetruecolor($width, $height);
-		$fondo = imagecolorallocate($dst, 255, 255, 255);
-		imagefill($dst, 0, 0, $fondo);
-        imagecopyresampled($dst,$src,0,0,0,0,$width,$height,$size[0],$size[1]);
-        imagedestroy($src);
-        $file_path = imagepng($dst,$file_path); // adjust format as needed
-        //move_uploaded_file($imagen["tmp_name"], $file_path);
-        //--------------------------------- imagen grande -------------------------------------
-
-        //--------------------------------- imagen chica -------------------------------------
-        $img_name = $id_art."_mini_img.png";
-        //file path to upload in the server 
-        $file_path = $upload_path . $img_name;  
-        $file = $imagen["tmp_name"];
-        $size = getimagesize($file);
-        $width0 = $size[0];
-        $height0 = $size[1];
-        $ratio = $width0/$height0;
-        
-        if($width0 > 150){
-            $width = 150;
-            $height = 150/$ratio;
-        }else{
-            $width = 150;
-            $height = 150/$ratio;
-        }
-        $src = imagecreatefromstring(file_get_contents($file));
-		$dst = imagecreatetruecolor($width, $height);
-		$fondo = imagecolorallocate($dst, 255, 255, 255);
-		imagefill($dst, 0, 0, $fondo);
-        imagecopyresampled($dst,$src,0,0,0,0,$width,$height,$size[0],$size[1]);
-        imagedestroy($src);
-        $file_path = imagepng($dst,$file_path); // adjust format as needed
-        //move_uploaded_file($imagen["tmp_name"], $file_path);
-        //--------------------------------- imagen chica -------------------------------------
-	}
 
 	function AltaClase($clase, $descripcion_breve, $descripcion, $minimo, $maximo)
 	{
@@ -663,22 +317,53 @@ class Admin
 		$params = array($clase, $descripcion, $descripcion_breve, $minimo, $maximo);
 		return $this->Conexiones->Insert($query, $params);
 	}
-	//------------------------------------------------ PRODUCTO --------------------------
 
-	//------------------------------------------------ ONESIGNAL --------------------------
-	function SetOneSignal($userId)
+	function AgregarHorario($id_clase, $id_instructor, $fecha) 
 	{
-		$query = "SELECT id_establecimiento FROM onesignal_establecimiento WHERE id_establecimiento = :id_establecimiento AND onesignal_token = :userId";
-		$parametros = array(array("id_establecimiento", $this->id_establecimiento), array("userId", $userId));
-		$c = $this->Conexiones->Select($query, $parametros);
-		if(sizeof($c) == 0)
-		{
-			$query = "INSERT INTO onesignal_establecimiento(id_establecimiento, onesignal_token) VALUES(?,?)";
-			$parametros = array($this->id_establecimiento, $userId);
-			$this->Conexiones->Insert($query, $parametros);
+		$fecha_y_hora = explode(" ", $fecha);
+		$fecha = $fecha_y_hora[0];
+		$hora_inicio = $fecha_y_hora[1];
+		$pm_am = $fecha_y_hora[2];
+
+		$diaSemana = date("l", strtotime($fecha));
+		switch ($diaSemana) {
+			case "Monday":
+				$diaSemana = "Lunes";
+				break;
+			case "Tuesday":
+				$diaSemana = "Martes";
+				break;
+			case "Wednesday":
+				$diaSemana = "Miercoles";
+				break;
+			case "Thursday":
+				$diaSemana = "Jueves";
+				break;
+			case "Friday":
+				$diaSemana = "Viernes";
+				break;
+			case "Saturday":
+				$diaSemana = "Sabado";
+				break;
+			case "Sunday":
+				$diaSemana = "Domingo";
+				break;
 		}
+
+		$horatime = strtotime($hora_inicio) + 60*60;
+		$hora_fin = date("H:i", $horatime)." ".$pm_am;
+		$hora_inicio = $hora_inicio." ".$pm_am;
+
+		$query = "INSERT INTO horario_clase(id_instructor, id_clase, dia, fecha, horario_inicio, horario_fin) VALUES(?,?,?,?,?,?)";
+		$parametros = array($id_instructor, $id_clase, $diaSemana, $fecha, $hora_inicio, $hora_fin);
+		$this->Conexiones->Insert($query, $parametros);
+
+		$Con = new Conexiones();
+		$query = "INSERT INTO instructor_clase(id_instructor, id_clase) VALUES(?, ?)";
+		$parametros = array($id_instructor, $id_clase);
+		$Con->Insert($query, $parametros);
 	}
-	//------------------------------------------------ ONESIGNAL --------------------------
+	//------------------------------------------------ PRODUCTO --------------------------
 
 	//------------------------------------------------ USUARIOS --------------------------
 	function GetUsuarios()

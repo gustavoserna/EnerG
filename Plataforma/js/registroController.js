@@ -34,7 +34,7 @@ $(document).ready(function()
                 if(data == "existe"){
                     alert("Usuario, teléfono o correo electrónico ya registrados");
                 } else {
-                    alert("Usuario creado");
+                    window.location.href = "login.php";
                 }
             } 
         });

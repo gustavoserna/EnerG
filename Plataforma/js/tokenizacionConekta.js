@@ -1,4 +1,4 @@
-Conekta.setPublicKey('key_JKfHmAnXHzK7sbHLFgTEUgA');
+Conekta.setPublicKey('key_ezDFJbsRkAMTbxYkyyLSpzQ');
 
 var conektaSuccessResponseHandler = function(token) {
   $.ajax({
@@ -9,8 +9,12 @@ var conektaSuccessResponseHandler = function(token) {
       token: token.id
     },     
     success : function(data) {
-      alert("Método de pago guardado");
-      loadMetodosPago();
+      //alert("Método de pago guardado");
+      swal("Gracias", ", Tu método de pago ha sido guardado. Ya puedes comprar el paquete que prefieras.", "success");
+      $("#name").val('');
+      $("#cardnumber").val('');
+      $("#expirationdate").val('');
+      $("#securitycode").val('');
     } 
   });
     /*var $form = $("#card-form");

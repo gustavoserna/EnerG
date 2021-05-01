@@ -33,6 +33,9 @@ if(!isset($_SESSION["loggedin"])){
 
   <!-- Main Stylesheet File -->
   <link href="css/style.css" rel="stylesheet">
+
+  <!-- Modales -->
+  <link rel="stylesheet" href="css/sweetalert.css">
   
 </head>
 
@@ -76,7 +79,10 @@ if(!isset($_SESSION["loggedin"])){
         <div class="form">
           <div id="sendmessage">Login</div>
           <form id="perfil-form" action="" method="post" role="form" class="contactForm">
-          <div class="form-group">
+            <div class="form-group">
+              <input type="text" class="form-control" name="clases" id="clases" placeholder="0 Clases disponibles" disabled />
+            </div>
+            <div class="form-group">
               <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" />
               <div class="validation"></div>
             </div>
@@ -157,16 +163,19 @@ if(!isset($_SESSION["loggedin"])){
             <div class="modal-body">
               <form id="cancelar-form" action="" method="post" role="form" class="contactForm">
                 <div class="form-group">
-                  <input type="text" class="form-control" name="clase" placeholder="Clase" disabled>
+                  <label>Clase</label>
+                  <input type="text" class="form-control" id="clase" disabled>
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" name="instructor" placeholder="Instructor" disabled>
+                  <label>Instructor</label>
+                  <input type="text" class="form-control" id="instructor" disabled>
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control" name="fecha" placeholder="Fecha" disabled>
+                  <label>Hora</label>
+                  <input type="text" class="form-control" id="hora" disabled>
                 </div>
                 <div class="text-center">
-                  <button id="comprar-plan" type="submit" class="btn">Cancelar</button>
+                  <button id="cancelar-clase-btn" type="submit" class="btn">Cancelar</button>
                 </div>
               </form>
             </div>
@@ -259,6 +268,9 @@ if(!isset($_SESSION["loggedin"])){
 
   <!-- BE Controller -->
   <script src="js/perfilController.js"></script>
+
+  <!-- Modales -->
+  <script src="js/sweetalert-dev.js"></script>
 </body>
 
 </html>

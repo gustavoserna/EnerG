@@ -31,7 +31,8 @@ class Usuario extends Sesion {
         c.id_clase, c.clase, c.descripcion, c.breve_descripcion,
         i.id_instructor, i.nombre, i.apellido, i.foto,
         hc.id_horario_clase, hc.fecha, hc.horario_inicio, hc.horario_fin,
-        ic.id_instructor_clase
+        ic.id_instructor_clase,
+        uc.id_usuario_clase
         FROM clase as c
         LEFT JOIN instructor_clase as ic ON ic.id_clase = c.id_clase
         LEFT JOIN instructor as i ON i.id_instructor = ic.id_instructor
@@ -47,10 +48,18 @@ class Usuario extends Sesion {
     }
     
     function getCreditosUsuario(){
-        $query = "SELECT IFNULL(clases_disponibles, 0) as clases_disponibles FROM plan_usuario WHERE id_usuario = :id_usuario  AND status = 1";
-        $params = array(array("id_usuario", $this->id_usuario));
-        $c = $this->Conexiones->Select($query, $params);
-        return $c[0]["clases_disponibles"];
+        if($this->id_usuario != "") {
+            $query = "SELECT IFNULL(clases_disponibles, 0) as clases_disponibles FROM plan_usuario WHERE id_usuario = :id_usuario  AND status = 1";
+            $params = array(array("id_usuario", $this->id_usuario));
+            $c = $this->Conexiones->Select($query, $params);
+            if(sizeof($c) > 0) {
+                return $c[0]["clases_disponibles"]." clases disponibles";
+            } else {
+                return "0 clases disponibles";
+            }
+        } else {
+            return "";
+        }
     }
 
     function getClase($id_usuario_clase){

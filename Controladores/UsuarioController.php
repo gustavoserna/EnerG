@@ -29,7 +29,7 @@ if($op == "getClasesStatusUsuario")
 
 if($op == "getCreditosUsuario")
 {
-    echo $Usuario->getCreditosUsuario();
+    echo trim($Usuario->getCreditosUsuario());
 }
 
 if($op == "getClase"){

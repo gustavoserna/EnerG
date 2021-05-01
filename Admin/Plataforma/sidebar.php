@@ -32,7 +32,7 @@ switch ($pag) {
   <div class="sidebar-wrapper">
     <ul class="nav">
       <li class="nav-item <?php echo  $dashboard; ?>">
-        <a class="nav-link" href="./dashboard.php">
+        <a class="nav-link" href="./index.php">
           <i class="material-icons">dashboard</i>
           <p>Dashboard</p>
         </a>
