@@ -1,7 +1,7 @@
 function getClasesDisponibles() {
     try {
         $.ajax({
-            "url": "../Controladores/UsuarioController.php", 
+            "url": "./Controladores/UsuarioController.php", 
             "type": "POST",
             "data": {
               op: "getCreditosUsuario"
@@ -21,7 +21,7 @@ $(document).ready(function()
 
     //get perfil
     $.ajax({
-        "url": "../Controladores/UsuarioController.php", 
+        "url": "./Controladores/UsuarioController.php", 
         "type": "POST",
         "data": {
           op: "getPerfil",
@@ -57,7 +57,7 @@ $(document).ready(function()
         }
 
         $.ajax({
-            "url": "../Controladores/UsuarioController.php", 
+            "url": "./Controladores/UsuarioController.php", 
             "type": "POST",
             "data": {
               op: "updatePerfil",
@@ -79,7 +79,7 @@ $(document).ready(function()
 function cerrarSesion() {
     //clases programadas
     $.ajax({
-        "url": "../Controladores/UsuarioController.php", 
+        "url": "./Controladores/UsuarioController.php", 
         "type": "POST",
         "data": {
           op: "cerrarSesion"
@@ -102,7 +102,7 @@ function cancelarClase(id_usuario_clase, clase_titulo, horario_inicio, instructo
 
 function confirmarCancelarClase(id_usuario_clase) {
     $.ajax({
-        "url": "../Controladores/ClaseController.php", 
+        "url": "./Controladores/ClaseController.php", 
         "type": "POST",
         "data": {
         op: "cancelarClase",
@@ -123,7 +123,7 @@ function loadClases(){
 
     //clases programadas
     $.ajax({
-        "url": "../Controladores/UsuarioController.php", 
+        "url": "./Controladores/UsuarioController.php", 
         "type": "POST",
         "data": {
           op: "getClasesStatusUsuario",
@@ -163,7 +163,7 @@ function loadClases(){
 
     //clases completadas
     $.ajax({
-        "url": "../Controladores/UsuarioController.php", 
+        "url": "./Controladores/UsuarioController.php", 
         "type": "POST",
         "data": {
           op: "getClasesStatusUsuario",
@@ -198,7 +198,7 @@ function loadClases(){
 
     //clases canceladas
     $.ajax({
-        "url": "../Controladores/UsuarioController.php", 
+        "url": "./Controladores/UsuarioController.php", 
         "type": "POST",
         "data": {
           op: "getClasesStatusUsuario",

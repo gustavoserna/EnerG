@@ -19,7 +19,7 @@ $(document).ready(function()
         }
 
         $.ajax({
-            "url": "../Controladores/SesionController.php", 
+            "url": "./Controladores/SesionController.php", 
             "type": "POST",
             "data": {
               op: "registro",

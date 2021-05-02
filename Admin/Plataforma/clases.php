@@ -482,7 +482,29 @@
 
     function verReservaciones(id_horario_clase) 
     {
-      var post_url = "../Backend/App.php";
+      $.ajax(
+      {
+        "url": "../Backend/App.php", 
+        "type": "POST",
+        "data": {
+          op: "GetReservacionesHorario",
+          id_horario_clase: id_horario_clase
+        }, 
+        success : function(data) 
+        {
+          $("#ventana-reservaciones").show();
+          $("#ventana-reservaciones").css("visibility", "visible");
+
+          var usuarios = data["usuarios"];
+          var table_body = "";
+          for(var i = 0; i < usuarios.length; i++)
+          {
+            table_body += "<tr><td>" + usuarios[i]["nombre"] + "</td>" + "<td>" + usuarios[i]["telefono"] + "</td>" + "</tr>";
+          }
+          $("#table-clase-reservaciones-body").html(table_body);
+        } 
+      });
+      /*ar post_url = "../Backend/App.php";
       var form_data = "op=GetReservacionesHorario&id_horario_clase=" + id_horario_clase;
       $.post(post_url, form_data, function(json)
       {
@@ -496,7 +518,7 @@
           table_body += "<tr><td>" + usuarios[i]["nombre"] + "</td>" + "<td>" + usuarios[i]["telefono"] + "</td>" + "</tr>";
         }
         $("#table-clase-reservaciones-body").html(table_body);
-      });
+      });*/
     }
 
     $("#close-ventana-reservaciones").click(function(event)
@@ -556,15 +578,6 @@
       }); 
 
       $('#tabla-instructor-info').DataTable({
-        "scrollY":"300px",
-        "scrollCollapse":true,
-        "paging":false,
-        "searching":false,
-        "ordering":false,
-        "info":false
-      });
-
-      $('#tabla-clase-reservaciones').DataTable({
         "scrollY":"300px",
         "scrollCollapse":true,
         "paging":false,

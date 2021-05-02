@@ -2,7 +2,7 @@ Conekta.setPublicKey('key_ezDFJbsRkAMTbxYkyyLSpzQ');
 
 var conektaSuccessResponseHandler = function(token) {
   $.ajax({
-    "url": "../Controladores/OrdenController.php", 
+    "url": "./Controladores/OrdenController.php", 
     "type": "POST",
     "data": {
       op: "RegistrarTarjeta",

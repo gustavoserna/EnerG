@@ -16,7 +16,7 @@ function comprarPlan() {
             alert("Selecciona un método de pago");
         } else {
             $.ajax({
-                "url": "../Controladores/OrdenController.php", 
+                "url": "./Controladores/OrdenController.php", 
                 "type": "POST",
                 "data": {
                     op: "AltaPlan",
@@ -55,7 +55,7 @@ function reservarClase(id_instructor_clase, id_horario_clase, id_clase, clase, h
 
 function confirmarClase(id_instructor_clase, id_horario_clase, id_clase) {
     $.ajax({
-        "url": "../Controladores/ClaseController.php", 
+        "url": "./Controladores/ClaseController.php", 
         "type": "POST",
         "data": {
         op: "agendarClase",
@@ -79,7 +79,7 @@ function confirmarClase(id_instructor_clase, id_horario_clase, id_clase) {
 
 function loadMetodosPago() {
     $.ajax({
-        "url": "../Controladores/UsuarioController.php", 
+        "url": "./Controladores/UsuarioController.php", 
         "type": "POST",
         "data": {
           op: "getMetodosPago"
@@ -112,7 +112,7 @@ function buscarSesion() {
 function getClasesDisponibles() {
     try {
         $.ajax({
-            "url": "../Controladores/UsuarioController.php", 
+            "url": "./Controladores/UsuarioController.php", 
             "type": "POST",
             "data": {
               op: "getCreditosUsuario"
@@ -130,7 +130,7 @@ $(document).ready(function()
 { 
     //verificar si hay una sesion iniciada
     $.ajax({
-        "url": "../Controladores/SesionController.php", 
+        "url": "./Controladores/SesionController.php", 
         "type": "POST",
         "data": {
           op: "buscarSesion"
@@ -148,7 +148,7 @@ $(document).ready(function()
 
     //get instructores
     $.ajax({
-        "url": "../Controladores/InstructorController.php", 
+        "url": "./Controladores/InstructorController.php", 
         "type": "GET",
         "data": {
           op: "getInstructores"
@@ -185,7 +185,7 @@ $(document).ready(function()
 
     //get horarios
     $.ajax({
-        "url": "../Controladores/ClaseController.php", 
+        "url": "./Controladores/ClaseController.php", 
         "type": "POST",
         "data": {
           op: "getClasesInstHor"
@@ -463,7 +463,7 @@ $(document).ready(function()
 
     //get planes
     $.ajax({
-        "url": "../Controladores/PlanController.php", 
+        "url": "./Controladores/PlanController.php", 
         "type": "GET",
         "data": {
           op: "getPlanes"
@@ -515,7 +515,7 @@ $(document).ready(function()
 
     //get galeria
     $.ajax({
-        "url": "../Controladores/ClaseController.php", 
+        "url": "./Controladores/ClaseController.php", 
         "type": "POST",
         "data": {
           op: "getGaleria"

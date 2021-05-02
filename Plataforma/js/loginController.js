@@ -6,7 +6,7 @@ $(document).ready(function()
         var clave = $("#password").val();
         
         $.ajax({
-            "url": "../Controladores/SesionController.php", 
+            "url": "./Controladores/SesionController.php", 
             "type": "POST",
             "data": {
               op: "login",

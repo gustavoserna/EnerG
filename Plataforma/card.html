@@ -109,6 +109,7 @@
 
     <div class="form-container">
         <div class="field-container">
+            <button onclick="sendForm()" type="submit" class="text-align:right;">Guardar tarjeta</button><br><br>
             <label for="name">Nombre del tarjetahabiente</label>
             <input id="name" maxlength="20" type="text">
         </div>
@@ -128,7 +129,6 @@
             <label for="securitycode">Código de seguridad</label>
             <input id="securitycode" type="text" pattern="[0-9]*" inputmode="numeric">
         </div>
-        <button onclick="sendForm()" type="submit">Guardar tarjeta</button>
     </div>
 <!-- partial -->
 <script src="lib/jquery/jquery.min.js"></script>

@@ -211,7 +211,7 @@ class Admin
 		LEFT JOIN horario_clase as hc ON hc.id_clase = c.id_clase
 		LEFT JOIN instructor as i ON i.id_instructor = hc.id_instructor
 		WHERE hc.status = 1 AND c.status = 1 AND i.status = 1 
-		ORDER BY hc.fecha DESC
+		ORDER BY hc.fecha ASC
 		";
 		$params = array();
 		$c = $this->Conexiones->Select($query, $params);
@@ -354,8 +354,14 @@ class Admin
 		$hora_fin = date("H:i", $horatime)." ".$pm_am;
 		$hora_inicio = $hora_inicio." ".$pm_am;
 
-		$query = "INSERT INTO horario_clase(id_instructor, id_clase, dia, fecha, horario_inicio, horario_fin) VALUES(?,?,?,?,?,?)";
-		$parametros = array($id_instructor, $id_clase, $diaSemana, $fecha, $hora_inicio, $hora_fin);
+		$Con = new Conexiones();
+		$query = "SELECT maximo FROM clase WHERE id_clase = :id_clase";
+		$params = array(array("id_clase", $id_clase));
+		$c = $Con->Select($query, $params);
+		$maximo = $c[0]["maximo"];
+
+		$query = "INSERT INTO horario_clase(id_instructor, id_clase, dia, fecha, horario_inicio, horario_fin, maximo) VALUES(?,?,?,?,?,?,?)";
+		$parametros = array($id_instructor, $id_clase, $diaSemana, $fecha, $hora_inicio, $hora_fin, $maximo);
 		$this->Conexiones->Insert($query, $parametros);
 
 		$Con = new Conexiones();
